@@ -1,59 +1,101 @@
-import React, { useState, useMemo, createContext, useContext } from 'react';
+import React, { useState, useMemo, createContext, useContext, useCallback } from 'react';
 import './Sidebar.css';
 
-// Create a context for the sidebar
+// Create a context for the sidebar state and update methods
 export const SidebarContext = createContext({
+    // State
     recentChats: [],
     currentChatId: null,
-    newChat: () => {},
-    selectChat: () => {},
-    deleteChat: () => {},
-    clearAllChats: () => {}
+    // Methods
+    setCurrentChatId: () => {},
+    setRecentChats: () => {},
+    // Action to be called from App.js after a prompt
+    updateChatTitle: () => {}, 
 });
 
-const Sidebar = () => {
-    const context = useContext(SidebarContext);
-    
-    // --- STATE MANAGEMENT ---
-    const initialRecentChats = useMemo(() => [
+// Sidebar Provider (Must wrap the App content to share state)
+export const SidebarProvider = ({ children }) => {
+    const initialChats = useMemo(() => [
         { id: 1, title: 'CSS Pitch Black Night Sky' },
         { id: 2, title: 'Adding Light Gradients to App' },
         { id: 3, title: 'CSS 3D Solar System Simulation' },
-        { id: 4, title: 'React Navbar Component with T...' },
-        { id: 5, title: 'Cyberpunk Login/Signup UI Desi...' }
     ], []);
 
-    const [recentChats, setRecentChats] = useState(initialRecentChats);
-    const [currentChatId, setCurrentChatId] = useState(initialRecentChats[0]?.id || null);
+    const [recentChats, setRecentChats] = useState(initialChats);
+    const [currentChatId, setCurrentChatId] = useState(initialChats[0]?.id || Date.now());
+
+    // Function called by App.js to create a new chat or update the current one's title
+    const updateChatTitle = useCallback((id, newTitle) => {
+        setRecentChats(prevChats => {
+            const index = prevChats.findIndex(chat => chat.id === id);
+            if (index !== -1) {
+                // Update existing chat title
+                return prevChats.map((chat, i) =>
+                    i === index ? { ...chat, title: newTitle.substring(0, 30) + (newTitle.length > 30 ? '...' : '') } : chat
+                );
+            } else {
+                // If ID is new (first time saving), create a new chat
+                const newChat = { 
+                    id, 
+                    title: newTitle.substring(0, 30) + (newTitle.length > 30 ? '...' : '') 
+                };
+                return [newChat, ...prevChats];
+            }
+        });
+        setCurrentChatId(id);
+    }, []);
+
+    // Other handlers (select, delete)
+
+    const handleDelete = (id) => {
+        // Implement delete logic here (using setRecentChats/setCurrentChatId)
+    };
+    
+    // ... define other handlers like newChat if needed for internal use ...
+
+    const contextValue = useMemo(() => ({
+        recentChats,
+        currentChatId,
+        setCurrentChatId,
+        setRecentChats,
+        updateChatTitle,
+        // ... add other public methods here
+    }), [recentChats, currentChatId, updateChatTitle]);
+
+    return (
+        <SidebarContext.Provider value={contextValue}>
+            {children}
+        </SidebarContext.Provider>
+    );
+};
+
+
+const Sidebar = () => {
+    const { 
+        recentChats, 
+        currentChatId, 
+        setCurrentChatId, 
+        setRecentChats, 
+        updateChatTitle // Not used directly but good practice to keep here
+    } = useContext(SidebarContext);
+
     const [searchTerm, setSearchTerm] = useState('');
     const [isSidebarOpen, setIsSidebarOpen] = useState(true);
-
-    // Placeholder data for the "Gems" section
-    const gems = [
-        { icon: '📖', name: 'Storybook' },
-        { icon: '💎', name: 'Explore Gems' }
-    ];
-
+    
+    // NOTE: GEMS REMOVED as requested.
+    
     // --- HANDLERS ---
 
     const handleNewChat = () => {
         const newId = Date.now();
-        const newChatItem = { id: newId, title: 'New Chat' };
-        setRecentChats(prevChats => [newChatItem, ...prevChats]);
+        const newChat = { id: newId, title: 'New Chat' };
+        setRecentChats(prevChats => [newChat, ...prevChats.filter(chat => chat.id !== newId)]);
         setCurrentChatId(newId);
         setSearchTerm('');
-        
-        // Call context method if provided
-        if (context.newChat) {
-            context.newChat(newChatItem);
-        }
     };
 
     const handleSelectChat = (id) => {
         setCurrentChatId(id);
-        if (context.selectChat) {
-            context.selectChat(id);
-        }
     };
 
     const handleToggleSidebar = () => {
@@ -71,12 +113,6 @@ const Sidebar = () => {
                 if (currentChatId === id) {
                     setCurrentChatId(updatedChats[0]?.id || null);
                 }
-                
-                // Call context method if provided
-                if (context.deleteChat) {
-                    context.deleteChat(id);
-                }
-                
                 return updatedChats;
             });
         }
@@ -86,7 +122,7 @@ const Sidebar = () => {
         const newTitle = prompt('Enter new chat title:');
         if (newTitle) {
             setRecentChats(recentChats.map(chat =>
-                chat.id === id ? { ...chat, title: newTitle } : chat
+                chat.id === id ? { ...chat, title: newTitle.substring(0, 30) } : chat
             ));
         }
     };
@@ -123,7 +159,7 @@ const Sidebar = () => {
             {/* Content Container - Conditionally rendered based on open state */}
             {isSidebarOpen && (
                 <>
-                    {/* Search Bar */}
+                    {/* Sidebar Search Bar */}
                     <div className="sidebar-search">
                         <span className="icon search-icon">🔍</span>
                         <input
@@ -135,20 +171,9 @@ const Sidebar = () => {
                         />
                     </div>
 
-                    {/* Middle Section: Gems (Features) */}
-                    <div className="sidebar-section gems-section">
-                        <h3>Gems</h3>
-                        {gems.map((item, index) => (
-                            <div key={index} className="sidebar-item">
-                                <span className="item-icon">{item.icon}</span>
-                                {item.name}
-                                <span className="pin-icon">📌</span>
-                            </div>
-                        ))}
-                    </div>
-
-                    {/* Bottom Section: Recent Chats (The main scrolling content) */}
-                    <div className="sidebar-section recent-chats-section">
+                    {/* Recent Chats Section (The main scrolling content) */}
+                    {/* This is the only scrolling section now */}
+                    <div className="sidebar-section recent-chats-section"> 
                         <h3>Recent</h3>
                         <div className="recent-chats-list">
                             {filteredChats.length > 0 ? (
@@ -186,7 +211,7 @@ const Sidebar = () => {
                 </>
             )}
 
-            {/* Settings & Help at the very bottom (Always visible, but content changes) */}
+            {/* Settings & Help at the very bottom */}
             <div className="sidebar-bottom">
                 <div className="sidebar-item settings">
                     <span className="icon">⚙️</span>

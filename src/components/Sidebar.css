@@ -1,36 +1,25 @@
-:root {
-    --sidebar-width: 280px;
-    --sidebar-collapsed-width: 60px;
-    --primary-color: #8ab4f8; /* Gemini blue */
-    --dark-bg: rgba(10, 10, 25, 0.95);
-    --hover-bg: rgba(255, 255, 255, 0.1);
-    --selected-bg: rgba(138, 180, 248, 0.15);
-    --new-chat-bg: rgba(138, 180, 248, 0.2);
-    --text-color: #e8eaed;
-}
-
 .sidebar {
-    width: var(--sidebar-width);
+    width: 280px;
     height: 100vh;
     position: fixed;
     top: 0;
     left: 0;
-    background-color: var(--dark-bg);
-    color: var(--text-color);
+    background-color: rgba(10, 10, 25, 0.9); /* Dark semi-transparent background */
+    color: #e8eaed;
     padding: 20px 15px;
     display: flex;
     flex-direction: column;
     z-index: 20;
     box-shadow: 2px 0 10px rgba(0, 0, 0, 0.5);
-    transition: width 0.3s ease, padding 0.3s ease;
-    overflow: hidden; /* Prevent body scroll */
+    transition: width 0.3s ease, padding 0.3s ease; /* Transition for collapse */
+    overflow-y: hidden; /* Prevent main sidebar scroll */
 }
 
-/* 1. Collapsed State */
+/* Collapsed State */
 .sidebar.collapsed {
-    width: var(--sidebar-collapsed-width);
+    width: 60px; /* Slimmer width when collapsed */
     padding: 20px 10px;
-    align-items: center;
+    align-items: center; /* Center items for icon-only view */
 }
 
 /* Sidebar Top Section */
@@ -41,7 +30,7 @@
 
 .menu-header {
     display: flex;
-    justify-content: flex-start;
+    justify-content: flex-start; /* Align menu icon to the left */
     margin-bottom: 20px;
 }
 
@@ -49,13 +38,16 @@
     font-size: 1.5rem;
     cursor: pointer;
     transition: color 0.2s;
-    line-height: 1; /* Helps with vertical alignment */
 }
 
-/* 2. New Chat Button */
+.search-icon {
+    color: #8ab4f8;
+}
+
+/* New Chat Button */
 .new-chat-button {
-    background-color: var(--new-chat-bg);
-    color: var(--primary-color);
+    background-color: rgba(138, 180, 248, 0.2);
+    color: #8ab4f8;
     padding: 10px 15px;
     border-radius: 20px;
     cursor: pointer;
@@ -64,8 +56,7 @@
     align-items: center;
     font-weight: 500;
     transition: background-color 0.2s;
-    width: 100%;
-    gap: 10px;
+    width: 100%; /* Ensure it spans the full width */
 }
 
 .new-chat-button:hover {
@@ -74,7 +65,7 @@
 
 .new-chat-button .icon {
     font-size: 1.1rem;
-    margin-right: 0;
+    margin-right: 10px;
 }
 
 /* Collapsed New Chat Button - Icon only */
@@ -85,19 +76,22 @@
     justify-content: center;
 }
 
-.sidebar.collapsed .new-chat-button .fullscreen-icon {
-    display: none;
+.sidebar.collapsed .new-chat-button .icon {
+    margin-right: 0;
 }
 
-/* 3. Search Bar Styling */
+.sidebar.collapsed .new-chat-button .fullscreen-icon {
+    display: none; /* Hide fullscreen icon when collapsed */
+}
+
+/* Search Bar Styling */
 .sidebar-search {
     display: flex;
     align-items: center;
     background-color: rgba(255, 255, 255, 0.1);
     border-radius: 8px;
-    padding: 8px 10px;
+    padding: 5px 10px;
     margin-bottom: 20px;
-    width: 100%;
 }
 
 .sidebar-search .search-icon {
@@ -109,38 +103,47 @@
     flex-grow: 1;
     background: none;
     border: none;
-    color: var(--text-color);
+    color: #e8eaed;
     outline: none;
+    padding: 5px 0;
     font-size: 0.95rem;
 }
-.search-input::placeholder {
-    color: #ccc;
-}
 
-/* 4. Section Structure & Scrolling */
+/* Sidebar Middle/Recent Section */
 .sidebar-section {
     width: 100%;
+    /* Flex-grow for Recent section to take remaining space and allow scroll */
 }
 
 .recent-chats-section {
-    flex-grow: 1; /* Takes up all available vertical space */
-    overflow-y: auto; /* Enables scrolling for the chats list */
-    padding-right: 5px; /* Visual space for scrollbar */
-    margin-bottom: 10px;
+    flex-grow: 1; 
+    overflow-y: auto; /* Enable scrolling for the chats list */
+    padding-right: 5px; /* Space for a cleaner scrollbar appearance */
 }
+
+/* Scrollbar styling (optional, for aesthetics) */
+.recent-chats-section::-webkit-scrollbar {
+    width: 8px;
+}
+.recent-chats-section::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 10px;
+}
+.recent-chats-section::-webkit-scrollbar-track {
+    background: transparent;
+}
+
 
 .sidebar-section h3 {
-    font-size: 0.9rem;
+    font-size: 1rem;
     color: #aaa;
     margin-top: 15px;
-    margin-bottom: 8px;
+    margin-bottom: 10px;
     padding-left: 5px;
-    font-weight: 400;
 }
 
-/* 5. Sidebar Items (Gems & Recent) */
 .sidebar-item {
-    position: relative;
+    position: relative; /* Needed for absolute positioning of actions */
     display: flex;
     align-items: center;
     padding: 10px 5px;
@@ -152,16 +155,16 @@
     overflow: hidden;
     text-overflow: ellipsis;
     transition: background-color 0.2s;
+    line-height: 1.2;
 }
 
 .sidebar-item:hover:not(.selected-chat) {
-    background-color: var(--hover-bg);
+    background-color: rgba(255, 255, 255, 0.1);
 }
 
 .item-icon {
     font-size: 1.1rem;
     margin-right: 10px;
-    line-height: 1;
 }
 
 .pin-icon {
@@ -171,53 +174,45 @@
 }
 
 .selected-chat {
-    background-color: var(--selected-bg);
-    color: var(--primary-color);
+    background-color: rgba(138, 180, 248, 0.15);
+    color: #8ab4f8;
     font-weight: 500;
 }
 
 /* Chat Actions (Edit/Delete) */
-.recent-chat {
-    padding-right: 50px; /* Reserve space for actions */
-}
-
 .chat-actions {
     position: absolute;
     right: 5px;
     top: 50%;
     transform: translateY(-50%);
     display: flex;
-    gap: 5px;
-    background-color: var(--selected-bg); /* Use selected color for background overlay */
+    gap: 8px;
+    background-color: inherit; /* Inherit the background for a clean look */
     padding-left: 10px;
-    opacity: 0;
+    opacity: 0; /* Hidden by default */
     transition: opacity 0.2s;
 }
 
-/* The selected chat or hover state on the item reveals the actions */
-.sidebar-item:hover .chat-actions {
-    opacity: 1;
-    background-color: rgba(255, 255, 255, 0.1); /* Use hover background when showing actions */
-}
+.sidebar-item:hover .chat-actions,
 .selected-chat .chat-actions {
-    opacity: 1;
-    background-color: var(--selected-bg);
+    opacity: 1; /* Show on hover or when selected */
 }
-
 
 .action-icon {
     font-size: 0.8rem;
     cursor: pointer;
     padding: 3px;
     border-radius: 4px;
+    /* Use a darker background on hover for the icons themselves */
 }
 
-.action-icon:hover {
-    background-color: rgba(0, 0, 0, 0.4);
+.edit-icon:hover {
+    background-color: rgba(0, 0, 0, 0.2);
 }
 
 .delete-icon:hover {
-    color: #f44336;
+    color: #f44336; /* Red on hover */
+    background-color: rgba(0, 0, 0, 0.2);
 }
 
 .no-results {
@@ -227,7 +222,7 @@
     font-size: 0.9rem;
 }
 
-/* 6. Sidebar Bottom Section (Settings) */
+/* Sidebar Bottom Section */
 .sidebar-bottom {
     margin-top: auto;
     padding-top: 20px;
@@ -237,7 +232,7 @@
 
 .sidebar-bottom .sidebar-item {
     color: #ccc;
-    justify-content: flex-start;
+    justify-content: flex-start; /* Align left */
 }
 
 .sidebar-bottom .icon {
@@ -248,4 +243,8 @@
 .sidebar.collapsed .sidebar-bottom .sidebar-item {
     padding: 10px 0;
     justify-content: center;
+}
+
+.sidebar.collapsed .sidebar-bottom .icon {
+    margin-right: 0;
 }

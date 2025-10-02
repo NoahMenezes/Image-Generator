@@ -1,17 +1,17 @@
-import React, { useRef, useEffect, useState, useCallback } from 'react';
+import React, { useRef, useEffect, useState, useCallback, useContext } from 'react';
 import './App.css';
-import Sidebar from './components/Sidebar';
+import Sidebar, { SidebarProvider, SidebarContext } from './components/Sidebar'; // Import Provider and Context
 import SearchBar from './components/SearchBar';
-import { generateTextResponse } from './config/Gemini'; // Import the text response function
+import { generateTextResponse } from './config/Gemini'; 
 
-// --- CONFIGURATION ---
+// --- CONFIGURATION (Keeping sidebar width consistent) ---
 const MAX_STAR_COUNT = 1200;
 const MIN_SPEED = 0.0005;
 const MAX_SPEED = 0.003;
-const SIDEBAR_WIDTH = 280;
+const SIDEBAR_WIDTH = 320; 
 // ---------------------
 
-// Star Class Definition (No changes needed here)
+// Star Class Definition (remains the same)
 class Star {
     constructor(W, H, sidebarWidth, startX = null, startY = null) {
         const isNew = startX !== null;
@@ -66,42 +66,100 @@ class Star {
 }
 
 
-export default function App() {
-    // 🎯 2. NEW STATE FOR API HANDLING
-    const [result, setResult] = useState(null);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null);
+// New component wrapper to use Context
+function AppContent() {
+    const { currentChatId, updateChatTitle, setCurrentChatId } = useContext(SidebarContext);
 
-    // Handle search submission - Now an ASYNC function
+    // State to hold all chat messages, keyed by chat ID
+    // { chatId: [{ role: 'user', text: '...' }, { role: 'model', text: '...' }], ... }
+    const [chatHistory, setChatHistory] = useState({});
+    
+    // Get current chat messages
+    const messages = chatHistory[currentChatId] || [];
+
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null); // Used for critical network/API key errors only
+    
+    const mainContentRef = useRef(null); 
+
+    // Function to add a message to the current chat
+    const addMessage = useCallback((role, text) => {
+        const message = { role, text, timestamp: Date.now() };
+        setChatHistory(prevHistory => {
+            // Use currentChatId state (which might be null if it's the very first message)
+            const id = currentChatId || Date.now(); 
+            
+            // If currentChatId was null, update it now for the next message/action
+            if (!currentChatId) {
+                setCurrentChatId(id);
+            }
+            
+            return {
+                ...prevHistory,
+                [id]: [...(prevHistory[id] || []), message]
+            };
+        });
+    }, [currentChatId, setCurrentChatId]);
+
+
+    // Handle search submission
     const handleSearchSubmit = useCallback(async (query) => { 
-        if (!query) return;
+        if (!query || loading) return;
+        
+        // Ensure a chat is selected/started
+        const chatID = currentChatId || Date.now();
+        if (!currentChatId) {
+            setCurrentChatId(chatID);
+        }
+
+        // 1. Save USER query to history
+        addMessage('user', query);
     
-        setLoading(true); // Start loading
-        setResult(null);  // Clear previous result
-        setError(null);   // Clear previous error
-    
-        console.log('Search query:', query);
+        setLoading(true);
+        setError(null);
     
         try {
-            // Line 98 (Original Line 87): The function call
             const apiResult = await generateTextResponse(query); 
     
-            // Update logic to handle text response
-            if (typeof apiResult === 'string' && (apiResult.startsWith('❌') || apiResult.includes('DEMO'))) {
-                setError(apiResult);
-            } else {
-                setResult(apiResult);
+            // 2. Determine role and content
+            let modelResponse = apiResult;
+            let responseRole = 'model';
+            
+            if (typeof apiResult === 'string' && apiResult.startsWith('❌')) {
+                setError(apiResult); // Display the error message in the console and potentially separately
+                responseRole = 'error'; 
+                // Don't save general errors to the main chat history, save as error message instead
+            } 
+            
+            // 3. Save MODEL response to history
+            addMessage(responseRole, modelResponse);
+
+            // 4. Update Sidebar Chat Title (only if it's the first message in this chat)
+            // Use the query itself to generate the title
+            if (messages.length === 0) {
+                updateChatTitle(chatID, query); 
             }
+
         } catch (e) {
             console.error("Fatal error during API call:", e);
-            setError(`A fatal error occurred: ${e.message}. Check your console and API key.`);
+            const errorMessage = `A fatal error occurred: ${e.message}. Check your console and API key.`;
+            setError(errorMessage);
+            addMessage('error', errorMessage);
         } finally {
-            setLoading(false); // End loading
-        } // End loading
-        
-    }, [generateTextResponse]);
+            setLoading(false);
+        }
+    }, [generateTextResponse, currentChatId, updateChatTitle, messages.length, addMessage, setCurrentChatId, loading]);
 
-    // ... all other canvas/star logic remains the same ...
+
+    // Effect to scroll to the bottom when new message is added
+    useEffect(() => {
+        if (mainContentRef.current) {
+            mainContentRef.current.scrollTop = mainContentRef.current.scrollHeight;
+        }
+    }, [messages.length]); 
+
+
+    // --- Canvas/Star Logic (remains the same) ---
     const canvasRef = useRef(null);
     const animationFrameRef = useRef(null);
     const starsRef = useRef([]);
@@ -153,22 +211,17 @@ export default function App() {
 
     useEffect(() => {
         let isMounted = true;
-
         const init = () => {
             if (!isMounted) return;
             setupCanvas();
-
             if (starsRef.current.length === 0) {
                 for (let i = 0; i < 800; i++) {
                     starsRef.current.push(new Star(W, H, SIDEBAR_WIDTH));
                 }
             }
-
             animationFrameRef.current = requestAnimationFrame(animate);
         };
-
         init();
-
         return () => {
             isMounted = false;
             if (animationFrameRef.current) {
@@ -183,50 +236,69 @@ export default function App() {
         };
         window.addEventListener('mousemove', handleMouseMove);
         window.addEventListener('resize', setupCanvas);
-
         return () => {
             window.removeEventListener('mousemove', handleMouseMove);
             window.removeEventListener('resize', setupCanvas);
         };
     }, [W, H]);
+    
+    // --- RENDER ---
+    
+    const contentClass = messages.length > 0 ? "main-content-overlay result-mode" : "main-content-overlay initial-mode";
 
     return (
         <div className="starfield-container" style={{ width: W, height: H }}>
             <Sidebar />
             <canvas ref={canvasRef} id="starfield" className="starfield-canvas" />
-            <div className="main-content-overlay">
-                {/* 🎯 3. CONDITIONAL RENDERING LOGIC */}
+            
+            {/* The main scrollable container */}
+            <div className={contentClass} ref={mainContentRef}>
+                <div className="content-scroll-area">
+                    
+                    {/* Message History */}
+                    {messages.map((msg, index) => (
+                        <div 
+                            key={index} 
+                            className={`chat-message ${msg.role}-message ${msg.role === 'error' ? 'error-text' : ''}`}
+                        >
+                            {/* Display different header/icon based on role */}
+                            <div className="message-header">
+                                {msg.role === 'user' ? 'You' : 'Gemini'}
+                            </div>
 
-                {/* Loading Indicator */}
+                            {/* Display text content */}
+                            <div className="message-content">
+                                <p style={{ whiteSpace: 'pre-wrap' }}>
+                                    {msg.text}
+                                </p>
+                            </div>
+                        </div>
+                    ))}
+
+                    {/* Default Greeting (Only show if history is empty) */}
+                    {messages.length === 0 && !loading && (
+                        <div className="info-text">
+                            <h1 className="greeting-hello">Hello, Noah</h1>
+                            <h2 className="greeting-question">What should we do today?</h2>
+                        </div>
+                    )}
+                </div>
+
+                {/* Loading Indicator (Moves with the search bar) */}
                 {loading && <div className="loading-indicator">🌌 Generating your response...</div>}
-
-                {/* Error Message */}
-                {error && (
-                    <div className="api-result error-text">
-                        <p>{error}</p>
-                    </div>
-                )}
-
-                {/* Successful Result (Text Content) */}
-                {result && !loading && !error && (
-                    <div className="api-result text-result">
-                        <h3>Response:</h3>
-                        {/* Display the text response instead of an image tag */}
-                        <p style={{ whiteSpace: 'pre-wrap' }}>{result}</p>
-                    </div>
-                )}
-
-                {/* Default Greeting (Only show if nothing is loading, erroring, or resulting) */}
-                {!loading && !error && !result && (
-                    <div className="info-text">
-                        <h1 className="greeting-hello">Hello, Noah</h1>
-                        <h2 className="greeting-question">What should we do today?</h2>
-                    </div>
-                )}
-
-                {/* SearchBar remains at the bottom */}
+                
+                {/* SearchBar remains fixed at the bottom of the main-content-overlay */}
                 <SearchBar onSearchSubmit={handleSearchSubmit} />
             </div>
         </div>
+    );
+}
+
+// Export the App component wrapped with the provider
+export default function App() {
+    return (
+        <SidebarProvider>
+            <AppContent />
+        </SidebarProvider>
     );
 }

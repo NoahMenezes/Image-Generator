@@ -1,4 +1,4 @@
-/* Base Styles for the Pitch Black Background */
+/* Base Styles for the Pitch Black Background (unchanged) */
 body, html, #root { 
     margin: 0;
     padding: 0;
@@ -11,7 +11,7 @@ body, html, #root {
     -moz-osx-font-smoothing: grayscale;
 }
 
-/* Container for the entire application */
+/* Container for the entire application (unchanged) */
 .starfield-container {
     position: relative;
     width: 100%;
@@ -19,110 +19,168 @@ body, html, #root {
     overflow: hidden;
 }
  
-/* Canvas Styles */
+/* Canvas Styles (unchanged) */
 .starfield-canvas {
     display: block;
     background-color: #000000;
     position: absolute;
     top: 0;
     left: 0;
-    z-index: 1; /* Low z-index so content can overlay */
+    z-index: 1;
 }
  
-/* Wrapper for all main content (Greeting + SearchBar) */
+/* Wrapper for all main content (Chat History + Fixed SearchBar) */
 .main-content-overlay {
     position: absolute;
-    top: 50%;
-    /* Start from the right of the sidebar */
-    left: 280px; 
+    left: var(--sidebar-width, 320px); 
     right: 0;
-    transform: translateY(-50%);
+    top: 0;
+    bottom: 0;
     z-index: 10;
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 20px;
+    padding: 0 20px;
     box-sizing: border-box;
-    max-width: calc(100% - 280px); /* Max width is screen width minus sidebar */
 }
 
-/* Info Text Styles for Centered Greeting */
-.info-text {
-    position: static; 
-    width: 100%; 
-    text-align: center;
-    pointer-events: none; /* Ignore mouse events */
-    margin: 0;
+/* Area that scrolls (Chat History) */
+.content-scroll-area {
+    flex-grow: 1; 
+    width: 100%;
+    /* Added space at the top for aesthetic margin */
+    padding: 50px 0 100px 0; /* Ensures last message clears the fixed search bar */
+    overflow-y: auto; 
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    /* Custom scrollbar styles */
+    scrollbar-width: thin;
+    scrollbar-color: #8ab4f8 rgba(255, 255, 255, 0.1);
+}
+.content-scroll-area::-webkit-scrollbar {
+    width: 8px;
+}
+.content-scroll-area::-webkit-scrollbar-thumb {
+    background-color: #8ab4f8;
+    border-radius: 4px;
+}
+.content-scroll-area::-webkit-scrollbar-track {
+    background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Default Greeting Position (Initial Mode) */
+.main-content-overlay.initial-mode {
+    justify-content: center;
+}
+
+.main-content-overlay.initial-mode .content-scroll-area {
+    flex-grow: 0; 
+    overflow-y: hidden;
     padding: 0;
+}
+
+
+/* Info Text Styles for Centered Greeting (unchanged) */
+.info-text {
+    position: relative; 
+    width: 100%; 
+    max-width: 800px; 
+    text-align: center;
+    margin-bottom: 250px; 
 }
  
 .greeting-hello {
     font-size: 2.5rem;
     font-weight: 300;
     margin: 0 0 8px 0;
-    color: #8ab4f8; /* Light blue/primary color */
+    color: #8ab4f8; 
     text-shadow: 0 0 10px rgba(138, 180, 248, 0.5);
 }
  
 .greeting-question {
     font-size: 3.5rem;
     font-weight: 400;
-    margin: 0 0 2rem 0;
+    margin: 0;
     color: #ffffff;
-    text-align: center;
     line-height: 1.2;
 }
 
-/* API Result Styles (for when a search is run) */
-.api-result {
+/* --- CHAT MESSAGE STYLES (NEW) --- */
+.chat-message {
     width: 100%;
     max-width: 800px;
     padding: 20px;
     margin-bottom: 20px;
-    background-color: rgba(30, 30, 30, 0.7);
     border-radius: 12px;
     text-align: left;
-    color: #e8eaed;
-    font-size: 1.1rem;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    line-height: 1.6;
 }
 
-.api-result pre {
-    white-space: pre-wrap;
-    word-wrap: break-word;
-    margin: 0;
-    padding: 0;
-    font-family: inherit;
+.message-header {
+    font-weight: 600;
+    margin-bottom: 10px;
+    font-size: 1.1rem;
 }
+
+.user-message {
+    background-color: rgba(30, 30, 30, 0.9);
+    color: #e8eaed;
+}
+
+.user-message .message-header {
+    color: #9cdcfe; 
+}
+
+.model-message {
+    background-color: rgba(40, 40, 60, 0.85); 
+    color: #ffffff;
+}
+
+.model-message .message-header {
+    color: #8ab4f8; 
+}
+
+.error-text {
+    background-color: rgba(255, 0, 0, 0.15);
+    color: #f44336;
+    border: 1px solid #f44336;
+}
+.error-text .message-header {
+    color: #f44336;
+}
+/* --- END CHAT MESSAGE STYLES --- */
+
 
 .loading-indicator {
     color: #8ab4f8;
     font-size: 1.5rem;
     margin-bottom: 20px;
+    position: absolute;
+    bottom: 100px; 
 }
 
-/* Responsive adjustments (Note: the @media syntax is for CSS-in-JS or SCSS/LESS, not pure CSS) */
-/* For pure CSS, these should be separated or converted */
-@media (max-width: 1024px) {
-    .main-content-overlay {
-        left: 240px;
-        max-width: calc(100% - 240px);
-    }
+/* Search Bar Positioning (FIXED) */
+.searchbar-container {
+    position: absolute; 
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 90%;
+    max-width: 700px;
+    z-index: 50;
+    margin: 0;
 }
- 
+
+/* Responsive adjustments (unchanged) */
 @media (max-width: 768px) {
     .main-content-overlay {
-        left: 0; /* Full width */
-        top: 40%;
-        transform: translateY(-50%);
-        padding: 20px;
+        left: 0; 
         max-width: 100%;
     }
-    .greeting-hello {
-        font-size: 2rem;
-    }
-    .greeting-question {
-        font-size: 2.5rem;
-        margin-bottom: 1.5rem;
+    .searchbar-container {
+        left: 50%;
+        transform: translateX(-50%);
     }
 }

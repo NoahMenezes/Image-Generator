@@ -1,94 +1,68 @@
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import { GoogleGenerativeAI } from '@google/generative-ai'; 
 
-// ⚠️ IMPORTANT: Add your Gemini API Key here or use environment variables
-// Get your free API key from: https://makersuite.google.com/app/apikey
-const GEMINI_API_KEY = process.env.REACT_APP_GEMINI_API_KEY;
+// ⚠️ IMPORTANT: Add your Gemini API Key here or use environment variables 
+// Get your free API key from: https://makersuite.google.com/app/apikey 
+const GEMINI_API_KEY = process.env.REACT_APP_GEMINI_API_KEY; 
 
-// Initialize Gemini AI
-let genAI;
-// Initialize only if API key exists
-if (GEMINI_API_KEY) {
-    genAI = new GoogleGenerativeAI(GEMINI_API_KEY);
-}
-
-// ----------------------------------------------------------------------
-// 🎯 TEXT GENERATION FUNCTION (New Primary Focus)
-// ----------------------------------------------------------------------
+// --- CONFIGURATION ---
+// Model used for image generation
+const IMAGEN_MODEL = 'imagen-3.0-generate-002';
+const API_BASE_URL = 'https://generativelanguage.googleapis.com/v1beta/models';
 
 /**
- * Generate a standard text response from the Gemini API.
- * @param {string} promptText - The user's text prompt.
- * @returns {string} The text response from the model.
+ * Generate an image using the Imagen model.
+ * * This function uses the `fetch` API to call the specialized Imagen prediction
+ * endpoint, as required for image generation.
+ * * @param {string} promptText - The user's text prompt for image generation.
+ * @returns {string} The Base64-encoded image data string (or an error message).
  */
-export async function generateTextResponse(promptText) {
-    // 1. Check for API key
-    if (!GEMINI_API_KEY) {
-        throw new Error('❌ Gemini API key not found! Please add REACT_APP_GEMINI_API_KEY to your .env file');
+export async function generateImageResponse(promptText) {
+    if (!GEMINI_API_KEY) { 
+        throw new Error('❌ Gemini API key not found! Please add REACT_APP_GEMINI_API_KEY to your .env file'); 
+    } 
+
+    if (!promptText || promptText.trim() === '') {
+        return "❌ Error: Please enter a prompt to generate an image.";
     }
 
-    // 2. Check for initialized client
-    if (!genAI) {
-        console.warn('⚠️ Falling back to DEMO mode: Gemini client not initialized.');
-        return await new Promise(resolve => setTimeout(() => resolve(
-            `This is a DEMO text response for prompt: "${promptText}". 
-            Please check your Gemini API key initialization.`
-        ), 500));
-    }
+    const payload = { 
+        instances: [{ prompt: promptText }], 
+        parameters: { 
+            sampleCount: 1,
+            aspectRatio: "1:1", 
+            outputMimeType: "image/jpeg"
+        } 
+    };
 
-    try {
-        // 3. API Call Logic for Text Generation
-        // Using the latest model name that's widely available
-        const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
+    const apiUrl = `${API_BASE_URL}/${IMAGEN_MODEL}:predict?key=${GEMINI_API_KEY}`;
 
-        console.log('🤖 Sending text generation request to Gemini AI...');
+    try { 
+        console.log(`🤖 Sending image generation request to ${IMAGEN_MODEL}...`); 
 
-        const result = await model.generateContent(promptText);
-        const response = await result.response;
-        const responseText = await response.text();
+        const response = await fetch(apiUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+        
+        const result = await response.json();
 
-        console.log('✅ Text response received.');
-        return responseText.trim();
-
-    } catch (error) {
-        console.error('❌ Error during text generation:', error);
-        return `❌ Error generating text response: ${error.message}. Please verify your API key and network connection.`;
-    }
-}
-
-// ----------------------------------------------------------------------
-// 🗑️ DEPRECATED/REMOVED IMAGE FUNCTION (Removed Placeholder Logic)
-// ----------------------------------------------------------------------
-
-// The original 'generateImage' function has been removed/deprecated as requested,
-// and the focus is now on standard text-to-text response generation via generateTextResponse.
-
-
-// ----------------------------------------------------------------------
-// 🎯 Utility Functions (Unchanged)
-// ----------------------------------------------------------------------
-
-/**
- * Test function to verify API connection with a simple text prompt.
- * @returns {boolean} True if API is working
- */
-export async function testGeminiConnection() {
-    try {
-        if (!GEMINI_API_KEY || !genAI) {
-            return false;
+        if (result.error) {
+            console.error('❌ API Error Details:', result.error);
+            return `❌ API Error: ${result.error.message}`;
         }
-        try {
-            const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
-            const result = await model.generateContent("Say 'API test successful' if you can read this.");
-            const response = await result.response;
-            const text = await response.text();
-            
-            return text.toLowerCase().includes('successful');
-        } catch (error) {
-            console.error('Gemini API test failed:', error);
-            return false;
+
+        // Extract Base64 encoded image data
+        if (result.predictions && result.predictions.length > 0 && result.predictions[0].bytesBase64Encoded) {
+            console.log('✅ Image data received.');
+            // Return the raw base64 string
+            return result.predictions[0].bytesBase64Encoded; 
+        } else {
+            return "❌ Error: Failed to retrieve image data from the prediction. Response might have been blocked or the API structure changed.";
         }
-    } catch (error) {
-        console.error('Gemini API test failed:', error);
-        return false;
-    }
+
+    } catch (error) { 
+        console.error('❌ Error during image generation:', error); 
+        return `❌ Network Error: ${error.message}. Check your connection or API configuration.`; 
+    } 
 }
