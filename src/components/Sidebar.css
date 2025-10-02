@@ -1,29 +1,21 @@
-/* components/Sidebar.css */
-
-/* --- GENERAL SIDEBAR STRUCTURE (The key change is here: low opacity background) --- */
 .sidebar {
-    /* Use a very dark color with SLIGHT TRANSPARENCY (0.92) to let stars show through */
-    background-color: rgba(15, 15, 18, 0.92); 
-    
+    width: 280px;
+    height: 100vh;
     position: fixed;
     top: 0;
     left: 0;
-    width: 280px; 
-    height: 100vh;
-    color: #e8eaed; 
-    z-index: 20; /* Must be higher than the canvas z-index (1) */
-    
-    padding: 10px 0;
-    box-sizing: border-box;
+    background-color: rgba(10, 10, 25, 0.9); /* Dark semi-transparent background */
+    color: #e8eaed;
+    padding: 20px 15px;
     display: flex;
-    flex-direction: column; 
-    box-shadow: 1px 0 10px rgba(0, 0, 0, 0.3); 
+    flex-direction: column;
+    z-index: 20;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.5);
+    transition: width 0.3s ease;
 }
 
-
-/* --- TOP MENU & NEW CHAT --- */
+/* Sidebar Top Section */
 .sidebar-top {
-    padding: 0 16px;
     margin-bottom: 20px;
 }
 
@@ -31,121 +23,101 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    height: 40px;
-    margin-bottom: 15px;
+    margin-bottom: 20px;
 }
 
 .icon {
-    font-size: 1.2rem;
+    font-size: 1.5rem;
     cursor: pointer;
-    padding: 8px;
-    border-radius: 50%;
-    transition: background-color 0.2s;
-    opacity: 0.8;
+    transition: color 0.2s;
 }
 
-.icon:hover {
-    /* Hover state is still transparent to blend better with the main panel */
-    background-color: rgba(255, 255, 255, 0.15); 
-    opacity: 1;
+.search-icon {
+    color: #8ab4f8;
 }
 
 .new-chat-button {
-    display: flex;
-    align-items: center;
-    /* FIX: Make button background OPAQUE (#3b4347) to ensure high contrast/readability */
-    background-color: #3b4347; 
+    background-color: rgba(138, 180, 248, 0.2);
+    color: #8ab4f8;
     padding: 10px 15px;
     border-radius: 20px;
-    font-weight: 500;
     cursor: pointer;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-weight: 500;
     transition: background-color 0.2s;
 }
 
 .new-chat-button:hover {
-    background-color: #4a545a; /* Opaque hover state */
+    background-color: rgba(138, 180, 248, 0.3);
 }
 
 .new-chat-button .icon {
-    padding: 0;
+    font-size: 1.1rem;
     margin-right: 10px;
-    font-size: 1rem;
-    opacity: 1;
 }
 
 .fullscreen-icon {
-    margin-left: auto;
-    font-size: 1.2rem;
-    padding: 0 5px;
+    font-size: 1rem;
+    opacity: 0.7;
 }
 
-
-/* --- SECTIONS (GEMS, RECENT) --- */
-.sidebar-section {
-    padding: 0 16px 20px;
-}
-
+/* Sidebar Middle/Recent Section */
 .sidebar-section h3 {
-    color: #9aa0a6;
-    font-size: 0.85rem;
-    font-weight: 500;
-    margin-bottom: 8px;
-    padding-left: 8px;
-    text-transform: uppercase;
+    font-size: 1rem;
+    color: #aaa;
+    margin-top: 15px;
+    margin-bottom: 10px;
+    padding-left: 5px;
 }
 
 .sidebar-item {
     display: flex;
     align-items: center;
-    gap: 12px;
-    padding: 12px 8px;
-    margin-bottom: 4px;
-    border-radius: 12px;
-    font-size: 0.95rem;
+    padding: 10px 5px;
+    margin-bottom: 5px;
+    border-radius: 8px;
     cursor: pointer;
+    font-size: 0.95rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
     transition: background-color 0.2s;
-    color: #e8eaed;
-    /* FIX: Ensure content items have a solid (opaque) background color */
-    background-color: transparent; 
 }
 
 .sidebar-item:hover:not(.selected-chat) {
-    /* Hover state is opaque enough to block stars for clear hover feedback */
-    background-color: rgba(255, 255, 255, 0.1); 
+    background-color: rgba(255, 255, 255, 0.1);
 }
 
 .item-icon {
     font-size: 1.1rem;
-    width: 20px;
-    text-align: center;
+    margin-right: 10px;
 }
 
 .pin-icon {
+    font-size: 0.8rem;
     margin-left: auto;
-    font-size: 0.9rem;
-    opacity: 0.6;
+    opacity: 0.5;
 }
 
-/* Style for the currently selected item (The most important fix for contrast) */
 .selected-chat {
-    /* FIX: Must use an OPAQUE color here to block the stars and make text crisp */
-    background-color: #313539; 
-    color: #fff;
+    background-color: rgba(138, 180, 248, 0.15);
+    color: #8ab4f8;
     font-weight: 500;
 }
 
-.selected-chat:hover {
-    background-color: #313539; 
-}
-
-
-/* --- BOTTOM SETTINGS --- */
+/* Sidebar Bottom Section */
 .sidebar-bottom {
-    margin-top: auto; 
-    padding: 10px 16px;
-    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    margin-top: auto; /* Pushes the settings to the very bottom */
+    padding-top: 20px;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .sidebar-bottom .sidebar-item {
-    margin-bottom: 0;
+    color: #ccc;
+}
+
+.sidebar-bottom .icon {
+    font-size: 1.2rem;
 }

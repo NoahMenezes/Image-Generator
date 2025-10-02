@@ -1,36 +1,29 @@
 /* src/components/SearchBar.css */
 
 .searchbar-container {
-    /* Flex layout to align input and buttons */
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    
-    /* Appearance: dark, rounded, and slightly elevated */
-    background-color: rgba(30, 30, 30, 0.9);
-    border-radius: 28px; /* High radius for pill shape */
+    width: 100%;
+    max-width: 700px;
+    background-color: rgba(50, 50, 50, 0.9);
+    border-radius: 30px;
     padding: 10px 15px;
-    
-    /* Size and placement relative to its parent container (.main-content-overlay) */
-    width: 600px; /* Standard width for a central element */
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
-    
-    /* Space below the greeting text */
-    margin-top: 40px; 
-    margin-left: auto; /* Ensures centering within the parent (.main-content-overlay) */
-    margin-right: auto;
-    
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+    transition: box-shadow 0.3s ease;
+}
+
+.searchbar-container:focus-within {
+    box-shadow: 0 4px 20px rgba(138, 180, 248, 0.4);
 }
 
 .searchbar-input {
-    /* Text input field styling */
-    flex-grow: 1; /* Take up most of the space */
+    flex-grow: 1;
     border: none;
     background: transparent;
     color: #ffffff;
     font-size: 1.1rem;
-    padding: 0 10px;
-    outline: none; 
+    padding: 5px 10px;
+    outline: none;
 }
 
 .searchbar-input::placeholder {
@@ -49,6 +42,12 @@
     transition: color 0.2s;
 }
 
-.searchbar-button:hover {
-    color: #ffffff;
+.searchbar-button:hover:not(:disabled) {
+    opacity: 1;
+    transform: scale(1.1);
+}
+
+.searchbar-button:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
 }
