@@ -2,7 +2,7 @@ import React, { useRef, useEffect, useState, useCallback } from 'react';
 import './App.css';
 import Sidebar from './components/Sidebar';
 import SearchBar from './components/SearchBar';
-import { generateImage } from './config/Gemini'; // 🎯 1. IMPORT generateImage
+import { generateTextResponse } from './config/Gemini'; // Import the text response function
 
 // --- CONFIGURATION ---
 const MAX_STAR_COUNT = 1200;
@@ -73,31 +73,33 @@ export default function App() {
     const [error, setError] = useState(null);
 
     // Handle search submission - Now an ASYNC function
-    const handleSearchSubmit = useCallback(async (query) => {
+    const handleSearchSubmit = useCallback(async (query) => { 
         if (!query) return;
-
+    
         setLoading(true); // Start loading
         setResult(null);  // Clear previous result
         setError(null);   // Clear previous error
-
+    
         console.log('Search query:', query);
-
+    
         try {
-            const apiResult = await generateImage(query); // Call the API function
-
-            // Assuming generateImage returns a large base64 string on success
+            // Line 98 (Original Line 87): The function call
+            const apiResult = await generateTextResponse(query); 
+    
+            // Update logic to handle text response
             if (typeof apiResult === 'string' && (apiResult.startsWith('❌') || apiResult.includes('DEMO'))) {
                 setError(apiResult);
             } else {
                 setResult(apiResult);
             }
         } catch (e) {
-            console.error("Fatal error during image generation:", e);
+            console.error("Fatal error during API call:", e);
             setError(`A fatal error occurred: ${e.message}. Check your console and API key.`);
         } finally {
             setLoading(false); // End loading
-        }
-    }, []);
+        } // End loading
+        
+    }, [generateTextResponse]);
 
     // ... all other canvas/star logic remains the same ...
     const canvasRef = useRef(null);
@@ -196,7 +198,7 @@ export default function App() {
                 {/* 🎯 3. CONDITIONAL RENDERING LOGIC */}
 
                 {/* Loading Indicator */}
-                {loading && <div className="loading-indicator">🌌 Generating your image...</div>}
+                {loading && <div className="loading-indicator">🌌 Generating your response...</div>}
 
                 {/* Error Message */}
                 {error && (
@@ -205,17 +207,12 @@ export default function App() {
                     </div>
                 )}
 
-                {/* Successful Result (Image/Content) */}
+                {/* Successful Result (Text Content) */}
                 {result && !loading && !error && (
-                    <div className="api-result">
-                        <h3>Generated Image:</h3>
-                        {/* Assuming 'result' is the base64 string, display it as an image */}
-                        <img
-                            src={`data:image/jpeg;base64,${result}`}
-                            alt="Generated content"
-                            style={{ maxWidth: '100%', maxHeight: '400px', borderRadius: '8px' }}
-                        />
-                        <p style={{ marginTop: '10px', fontSize: '0.9rem' }}>Note: Display relies on API returning a valid base64 image string.</p>
+                    <div className="api-result text-result">
+                        <h3>Response:</h3>
+                        {/* Display the text response instead of an image tag */}
+                        <p style={{ whiteSpace: 'pre-wrap' }}>{result}</p>
                     </div>
                 )}
 

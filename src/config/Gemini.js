@@ -12,63 +12,59 @@ if (GEMINI_API_KEY) {
 }
 
 // ----------------------------------------------------------------------
-// 🎯 Image Generation Function
+// 🎯 TEXT GENERATION FUNCTION (New Primary Focus)
 // ----------------------------------------------------------------------
 
 /**
- * Generate a base64-encoded image based on a text prompt using the Gemini API.
- * * NOTE: This is a placeholder structure. True image generation requires dedicated
- * * models/endpoints (like Imagen) often separate from the primary generateContent flow.
- * * @param {string} promptText - The user's prompt describing the desired image.
- * * @returns {string} Base64-encoded image data string (or a demo/error message).
+ * Generate a standard text response from the Gemini API.
+ * @param {string} promptText - The user's text prompt.
+ * @returns {string} The text response from the model.
  */
-export async function generateImage(promptText) {
+export async function generateTextResponse(promptText) {
     // 1. Check for API key
     if (!GEMINI_API_KEY) {
         throw new Error('❌ Gemini API key not found! Please add REACT_APP_GEMINI_API_KEY to your .env file');
     }
-    
-    // 2. Mock Data for unavailable API
+
+    // 2. Check for initialized client
     if (!genAI) {
         console.warn('⚠️ Falling back to DEMO mode: Gemini client not initialized.');
         return await new Promise(resolve => setTimeout(() => resolve(
-            `This is a DEMO response for prompt: "${promptText}". 
-            Image generation requires a working Gemini API key and a dedicated model setup.`
-        ), 1500));
+            `This is a DEMO text response for prompt: "${promptText}". 
+            Please check your Gemini API key initialization.`
+        ), 500));
     }
 
     try {
-        // 3. API Call Logic (Simplified Placeholder for Image Generation)
-        
-        const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' }); 
-        
-        const imagePrompt = `Generate a creative, detailed, high-resolution image based on the following description. 
-        Your response must ONLY be the base64-encoded string of the generated image: "${promptText}"`;
+        // 3. API Call Logic for Text Generation
+        // Using the latest model name that's widely available
+        const model = genAI.getGenerativeModel({ model: 'gemini-2.0-flash' });
 
-        console.log('🤖 Sending image generation request to Gemini AI...');
-        
-        const result = await model.generateContent({
-            contents: [{ role: 'user', parts: [{ text: imagePrompt }] }],
-        });
+        console.log('🤖 Sending text generation request to Gemini AI...');
 
-        const responseText = result.response.text.trim();
-        
-        if (responseText.length > 500) {
-            console.log('✅ Image data received (Simulated Base64 string).');
-            return responseText; // Return the base64 string
-        } else {
-            throw new Error(`Model did not return a base64 image string. Response: ${responseText.substring(0, 100)}...`);
-        }
-        
+        const result = await model.generateContent(promptText);
+        const response = await result.response;
+        const responseText = await response.text();
+
+        console.log('✅ Text response received.');
+        return responseText.trim();
+
     } catch (error) {
-        console.error('❌ Error during image generation:', error);
-        
-        return `❌ Error generating image: ${error.message}. Please verify your API key and model capability for image generation.`;
+        console.error('❌ Error during text generation:', error);
+        return `❌ Error generating text response: ${error.message}. Please verify your API key and network connection.`;
     }
 }
 
 // ----------------------------------------------------------------------
-// 🎯 Utility Functions
+// 🗑️ DEPRECATED/REMOVED IMAGE FUNCTION (Removed Placeholder Logic)
+// ----------------------------------------------------------------------
+
+// The original 'generateImage' function has been removed/deprecated as requested,
+// and the focus is now on standard text-to-text response generation via generateTextResponse.
+
+
+// ----------------------------------------------------------------------
+// 🎯 Utility Functions (Unchanged)
 // ----------------------------------------------------------------------
 
 /**
@@ -80,12 +76,17 @@ export async function testGeminiConnection() {
         if (!GEMINI_API_KEY || !genAI) {
             return false;
         }
-        
-        const model = genAI.getGenerativeModel({ model: 'gemini-2.5-flash' });
-        const result = await model.generateContent("Say 'API test successful' if you can read this.");
-        const response = await result.response;
-        
-        return response.text().toLowerCase().includes('successful');
+        try {
+            const model = genAI.getGenerativeModel({ model: 'gemini-pro' });
+            const result = await model.generateContent("Say 'API test successful' if you can read this.");
+            const response = await result.response;
+            const text = await response.text();
+            
+            return text.toLowerCase().includes('successful');
+        } catch (error) {
+            console.error('Gemini API test failed:', error);
+            return false;
+        }
     } catch (error) {
         console.error('Gemini API test failed:', error);
         return false;

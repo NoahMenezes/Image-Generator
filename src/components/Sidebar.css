@@ -1,28 +1,47 @@
+:root {
+    --sidebar-width: 280px;
+    --sidebar-collapsed-width: 60px;
+    --primary-color: #8ab4f8; /* Gemini blue */
+    --dark-bg: rgba(10, 10, 25, 0.95);
+    --hover-bg: rgba(255, 255, 255, 0.1);
+    --selected-bg: rgba(138, 180, 248, 0.15);
+    --new-chat-bg: rgba(138, 180, 248, 0.2);
+    --text-color: #e8eaed;
+}
+
 .sidebar {
-    width: 280px;
+    width: var(--sidebar-width);
     height: 100vh;
     position: fixed;
     top: 0;
     left: 0;
-    background-color: rgba(10, 10, 25, 0.9); /* Dark semi-transparent background */
-    color: #e8eaed;
+    background-color: var(--dark-bg);
+    color: var(--text-color);
     padding: 20px 15px;
     display: flex;
     flex-direction: column;
     z-index: 20;
     box-shadow: 2px 0 10px rgba(0, 0, 0, 0.5);
-    transition: width 0.3s ease;
+    transition: width 0.3s ease, padding 0.3s ease;
+    overflow: hidden; /* Prevent body scroll */
+}
+
+/* 1. Collapsed State */
+.sidebar.collapsed {
+    width: var(--sidebar-collapsed-width);
+    padding: 20px 10px;
+    align-items: center;
 }
 
 /* Sidebar Top Section */
 .sidebar-top {
     margin-bottom: 20px;
+    width: 100%;
 }
 
 .menu-header {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
+    justify-content: flex-start;
     margin-bottom: 20px;
 }
 
@@ -30,15 +49,13 @@
     font-size: 1.5rem;
     cursor: pointer;
     transition: color 0.2s;
+    line-height: 1; /* Helps with vertical alignment */
 }
 
-.search-icon {
-    color: #8ab4f8;
-}
-
+/* 2. New Chat Button */
 .new-chat-button {
-    background-color: rgba(138, 180, 248, 0.2);
-    color: #8ab4f8;
+    background-color: var(--new-chat-bg);
+    color: var(--primary-color);
     padding: 10px 15px;
     border-radius: 20px;
     cursor: pointer;
@@ -47,6 +64,8 @@
     align-items: center;
     font-weight: 500;
     transition: background-color 0.2s;
+    width: 100%;
+    gap: 10px;
 }
 
 .new-chat-button:hover {
@@ -55,24 +74,73 @@
 
 .new-chat-button .icon {
     font-size: 1.1rem;
+    margin-right: 0;
+}
+
+/* Collapsed New Chat Button - Icon only */
+.sidebar.collapsed .new-chat-button {
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    justify-content: center;
+}
+
+.sidebar.collapsed .new-chat-button .fullscreen-icon {
+    display: none;
+}
+
+/* 3. Search Bar Styling */
+.sidebar-search {
+    display: flex;
+    align-items: center;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    padding: 8px 10px;
+    margin-bottom: 20px;
+    width: 100%;
+}
+
+.sidebar-search .search-icon {
+    font-size: 1.2rem;
     margin-right: 10px;
 }
 
-.fullscreen-icon {
-    font-size: 1rem;
-    opacity: 0.7;
+.search-input {
+    flex-grow: 1;
+    background: none;
+    border: none;
+    color: var(--text-color);
+    outline: none;
+    font-size: 0.95rem;
+}
+.search-input::placeholder {
+    color: #ccc;
 }
 
-/* Sidebar Middle/Recent Section */
+/* 4. Section Structure & Scrolling */
+.sidebar-section {
+    width: 100%;
+}
+
+.recent-chats-section {
+    flex-grow: 1; /* Takes up all available vertical space */
+    overflow-y: auto; /* Enables scrolling for the chats list */
+    padding-right: 5px; /* Visual space for scrollbar */
+    margin-bottom: 10px;
+}
+
 .sidebar-section h3 {
-    font-size: 1rem;
+    font-size: 0.9rem;
     color: #aaa;
     margin-top: 15px;
-    margin-bottom: 10px;
+    margin-bottom: 8px;
     padding-left: 5px;
+    font-weight: 400;
 }
 
+/* 5. Sidebar Items (Gems & Recent) */
 .sidebar-item {
+    position: relative;
     display: flex;
     align-items: center;
     padding: 10px 5px;
@@ -87,12 +155,13 @@
 }
 
 .sidebar-item:hover:not(.selected-chat) {
-    background-color: rgba(255, 255, 255, 0.1);
+    background-color: var(--hover-bg);
 }
 
 .item-icon {
     font-size: 1.1rem;
     margin-right: 10px;
+    line-height: 1;
 }
 
 .pin-icon {
@@ -102,22 +171,81 @@
 }
 
 .selected-chat {
-    background-color: rgba(138, 180, 248, 0.15);
-    color: #8ab4f8;
+    background-color: var(--selected-bg);
+    color: var(--primary-color);
     font-weight: 500;
 }
 
-/* Sidebar Bottom Section */
+/* Chat Actions (Edit/Delete) */
+.recent-chat {
+    padding-right: 50px; /* Reserve space for actions */
+}
+
+.chat-actions {
+    position: absolute;
+    right: 5px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    gap: 5px;
+    background-color: var(--selected-bg); /* Use selected color for background overlay */
+    padding-left: 10px;
+    opacity: 0;
+    transition: opacity 0.2s;
+}
+
+/* The selected chat or hover state on the item reveals the actions */
+.sidebar-item:hover .chat-actions {
+    opacity: 1;
+    background-color: rgba(255, 255, 255, 0.1); /* Use hover background when showing actions */
+}
+.selected-chat .chat-actions {
+    opacity: 1;
+    background-color: var(--selected-bg);
+}
+
+
+.action-icon {
+    font-size: 0.8rem;
+    cursor: pointer;
+    padding: 3px;
+    border-radius: 4px;
+}
+
+.action-icon:hover {
+    background-color: rgba(0, 0, 0, 0.4);
+}
+
+.delete-icon:hover {
+    color: #f44336;
+}
+
+.no-results {
+    padding: 10px 5px;
+    color: #aaa;
+    font-style: italic;
+    font-size: 0.9rem;
+}
+
+/* 6. Sidebar Bottom Section (Settings) */
 .sidebar-bottom {
-    margin-top: auto; /* Pushes the settings to the very bottom */
+    margin-top: auto;
     padding-top: 20px;
     border-top: 1px solid rgba(255, 255, 255, 0.1);
+    width: 100%;
 }
 
 .sidebar-bottom .sidebar-item {
     color: #ccc;
+    justify-content: flex-start;
 }
 
 .sidebar-bottom .icon {
     font-size: 1.2rem;
+}
+
+/* Collapsed Sidebar Bottom Item */
+.sidebar.collapsed .sidebar-bottom .sidebar-item {
+    padding: 10px 0;
+    justify-content: center;
 }
