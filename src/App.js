@@ -1,7 +1,8 @@
 import React, { useRef, useEffect, useState, useCallback } from 'react';
-import './App.css'; 
-import Sidebar from './components/Sidebar'; 
-import SearchBar from './components/SearchBar'; 
+import './App.css';
+import Sidebar from './components/Sidebar';
+import SearchBar from './components/SearchBar';
+import { generateImage } from './config/Gemini'; // 🎯 1. IMPORT generateImage
 
 // --- CONFIGURATION ---
 const MAX_STAR_COUNT = 1200;
@@ -10,13 +11,13 @@ const MAX_SPEED = 0.003;
 const SIDEBAR_WIDTH = 280;
 // ---------------------
 
-// Star Class Definition
+// Star Class Definition (No changes needed here)
 class Star {
-    constructor(W, H, sidebarWidth, startX = null, startY = null) { 
+    constructor(W, H, sidebarWidth, startX = null, startY = null) {
         const isNew = startX !== null;
         this.W = W;
         this.H = H;
-        this.sidebarWidth = sidebarWidth; 
+        this.sidebarWidth = sidebarWidth;
 
         if (isNew) {
             this.x = startX - W / 2;
@@ -27,7 +28,7 @@ class Star {
             this.y = Math.random() * H - H / 2;
             this.z = Math.random() * W;
         }
-        
+
         this.speedMultiplier = Math.random() * (MAX_SPEED - MIN_SPEED) + MIN_SPEED;
     }
 
@@ -60,28 +61,54 @@ class Star {
         ctx.beginPath();
         ctx.arc(xP, yP, size, 0, Math.PI * 2, false);
         ctx.fillStyle = `rgba(255, 255, 255, ${brightness / 255})`;
-        ctx.fill(); // 🎯 FIX 3: Must call fill() to draw the circle
+        ctx.fill();
     }
 }
 
 
-export default function Starfield() {
-    // Handle search submission
-    // Using useCallback for optimization
-    const handleSearchSubmit = useCallback((query) => {
+export default function App() {
+    // 🎯 2. NEW STATE FOR API HANDLING
+    const [result, setResult] = useState(null);
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
+
+    // Handle search submission - Now an ASYNC function
+    const handleSearchSubmit = useCallback(async (query) => {
+        if (!query) return;
+
+        setLoading(true); // Start loading
+        setResult(null);  // Clear previous result
+        setError(null);   // Clear previous error
+
         console.log('Search query:', query);
-        // TODO: Implement search functionality (e.g., call generateImage)
+
+        try {
+            const apiResult = await generateImage(query); // Call the API function
+
+            // Assuming generateImage returns a large base64 string on success
+            if (typeof apiResult === 'string' && (apiResult.startsWith('❌') || apiResult.includes('DEMO'))) {
+                setError(apiResult);
+            } else {
+                setResult(apiResult);
+            }
+        } catch (e) {
+            console.error("Fatal error during image generation:", e);
+            setError(`A fatal error occurred: ${e.message}. Check your console and API key.`);
+        } finally {
+            setLoading(false); // End loading
+        }
     }, []);
-    
+
+    // ... all other canvas/star logic remains the same ...
     const canvasRef = useRef(null);
     const animationFrameRef = useRef(null);
     const starsRef = useRef([]);
 
-    const [dimensions, setDimensions] = useState({ 
-        W: window.innerWidth, 
-        H: window.innerHeight, // 🎯 FIX 2: Initialize H with window.innerHeight
+    const [dimensions, setDimensions] = useState({
+        W: window.innerWidth,
+        H: window.innerHeight,
     });
-    const { W, H } = dimensions; // H is now guaranteed to be a number
+    const { W, H } = dimensions;
 
     const setupCanvas = () => {
         const currentW = window.innerWidth;
@@ -97,7 +124,6 @@ export default function Starfield() {
 
     const spawnStar = (x, y) => {
         if (x > SIDEBAR_WIDTH && starsRef.current.length < MAX_STAR_COUNT) {
-            // Note: passing W and H from state is necessary for the Star constructor
             starsRef.current.push(new Star(W, H, SIDEBAR_WIDTH, x, y));
         }
     };
@@ -108,7 +134,7 @@ export default function Starfield() {
 
         const ctx = canvas.getContext('2d');
         ctx.fillStyle = 'black';
-        ctx.fillRect(0, 0, W, H); 
+        ctx.fillRect(0, 0, W, H);
 
         let newStars = [];
         for (let i = 0; i < starsRef.current.length; i++) {
@@ -116,21 +142,20 @@ export default function Starfield() {
                 starsRef.current[i].draw(ctx);
                 newStars.push(starsRef.current[i]);
             }
-        } // 🎯 FIX 1: Closing brace for the for-loop added here
-        
+        }
+
         starsRef.current = newStars;
 
         animationFrameRef.current = requestAnimationFrame(animate);
-    }; // Closing brace for the animate function
+    };
 
     useEffect(() => {
         let isMounted = true;
-        
+
         const init = () => {
             if (!isMounted) return;
             setupCanvas();
 
-            // Initialize stars
             if (starsRef.current.length === 0) {
                 for (let i = 0; i < 800; i++) {
                     starsRef.current.push(new Star(W, H, SIDEBAR_WIDTH));
@@ -165,20 +190,45 @@ export default function Starfield() {
 
     return (
         <div className="starfield-container" style={{ width: W, height: H }}>
-            
-            <Sidebar /> 
-            
+            <Sidebar />
             <canvas ref={canvasRef} id="starfield" className="starfield-canvas" />
-            
-            {/* Wrapper for all main content (Greeting + SearchBar) */}
             <div className="main-content-overlay">
-                <div className="info-text">
-                    <h1 className="greeting-hello">Hello, Noah</h1>
-                    <h2 className="greeting-question">What should we do today?</h2>
-                </div>
-                
-                {/* SearchBar with the handler passed correctly */}
-                <SearchBar onSearchSubmit={handleSearchSubmit} /> 
+                {/* 🎯 3. CONDITIONAL RENDERING LOGIC */}
+
+                {/* Loading Indicator */}
+                {loading && <div className="loading-indicator">🌌 Generating your image...</div>}
+
+                {/* Error Message */}
+                {error && (
+                    <div className="api-result error-text">
+                        <p>{error}</p>
+                    </div>
+                )}
+
+                {/* Successful Result (Image/Content) */}
+                {result && !loading && !error && (
+                    <div className="api-result">
+                        <h3>Generated Image:</h3>
+                        {/* Assuming 'result' is the base64 string, display it as an image */}
+                        <img
+                            src={`data:image/jpeg;base64,${result}`}
+                            alt="Generated content"
+                            style={{ maxWidth: '100%', maxHeight: '400px', borderRadius: '8px' }}
+                        />
+                        <p style={{ marginTop: '10px', fontSize: '0.9rem' }}>Note: Display relies on API returning a valid base64 image string.</p>
+                    </div>
+                )}
+
+                {/* Default Greeting (Only show if nothing is loading, erroring, or resulting) */}
+                {!loading && !error && !result && (
+                    <div className="info-text">
+                        <h1 className="greeting-hello">Hello, Noah</h1>
+                        <h2 className="greeting-question">What should we do today?</h2>
+                    </div>
+                )}
+
+                {/* SearchBar remains at the bottom */}
+                <SearchBar onSearchSubmit={handleSearchSubmit} />
             </div>
         </div>
     );

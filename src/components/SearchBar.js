@@ -1,16 +1,13 @@
-// src/components/SearchBar.js
-
 import React, { useState } from 'react';
 import PropTypes from 'prop-types';
 import './SearchBar.css';
 
 const SearchBar = ({ onSearchSubmit = () => {} }) => {
     const [input, setInput] = useState('');
-    const [error, setError] = useState(null);
-
+    
     const handleSubmit = (event) => {
         try {
-            // Prevent form submission if this were a form
+            // Prevent form submission if this were a form (Good defensive practice)
             if (event && event.preventDefault) {
                 event.preventDefault();
             }
@@ -43,12 +40,18 @@ const SearchBar = ({ onSearchSubmit = () => {} }) => {
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={handleKeyDown}
             />
+            {/* Microphone button (first button) */}
             <button className="searchbar-button" disabled={!input.trim()}>
                 🎤
             </button>
-            {/* 🎯 Attach handleSubmit to the click event */}
-            <button className="searchbar-button" onClick={handleSubmit} disabled={!input.trim()}>
-                ✨
+            
+            {/* 🎯 Submit button, now using a standard right arrow (send) icon */}
+            <button 
+                className="searchbar-button send-button" 
+                onClick={handleSubmit} 
+                disabled={!input.trim()}
+            >
+                ➡️ {/* Changed from ✨ to ➡️ for a typical "send" or "enter" visual */}
             </button>
         </div>
     );
