@@ -1,0 +1,58 @@
+/* components/Sidebar.css */
+
+.sidebar {
+    /* Fixed position to stay visible on top of the starfield */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 280px; /* Width of the sidebar */
+    height: 100vh;
+    
+    /* Dark, semi-transparent background for night theme */
+    background-color: rgba(10, 10, 10, 0.85); 
+    color: #f0f0f0;
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.5);
+    z-index: 20; /* Ensure it is above the canvas (z-index: 1) */
+    
+    padding: 20px 0;
+    box-sizing: border-box;
+    transition: width 0.3s ease; /* For future animations (e.g., collapse) */
+}
+
+.sidebar-header {
+    padding: 0 20px 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    margin-bottom: 20px;
+}
+
+.sidebar-header h2 {
+    margin: 0;
+    font-size: 1.4rem;
+    font-weight: 500;
+}
+
+.sidebar-nav ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.sidebar-nav li a {
+    display: block;
+    padding: 10px 20px;
+    text-decoration: none;
+    color: #ccc;
+    font-size: 1rem;
+    transition: background-color 0.2s;
+}
+
+.sidebar-nav li a:hover {
+    background-color: rgba(255, 255, 255, 0.05);
+    color: #fff;
+}
+
+.sidebar-content {
+    padding: 20px;
+    font-size: 0.9rem;
+    color: #aaa;
+}

@@ -1,0 +1,36 @@
+/* App.css (or Starfield.css) */
+
+/* Base Styles for the Pitch Black Background */
+body, html, #root { 
+  /* #root is important in React to cover the whole page */
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  background-color: #000000; /* PITCH BLACK */
+  font-family: sans-serif;
+  height: 100%;
+  width: 100%;
+}
+
+/* Canvas Styles */
+.starfield-canvas {
+  display: block;
+  background-color: #000000;
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1;
+}
+
+/* Info Text Styles */
+.info-text {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: rgba(255, 255, 255, 0.2); /* Very faint white text */
+  font-size: 1.2rem;
+  text-align: center;
+  pointer-events: none;
+  z-index: 10;
+}
