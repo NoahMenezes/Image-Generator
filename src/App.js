@@ -1,30 +1,41 @@
-import React, { useRef, useEffect, useState } from 'react';
-import './App.css'; // Assuming you named the CSS file App.css
+// Starfield.js (formerly your main component logic)
 
-// Configuration constants defined outside the component for clarity
+import React, { useRef, useEffect, useState } from 'react';
+import './App.css'; 
+import Sidebar from './components/Sidebar'; // 1. Import the new Sidebar
+
+// --- CONFIGURATION ---
 const MAX_STAR_COUNT = 1200;
 const MIN_SPEED = 0.0005;
 const MAX_SPEED = 0.003;
+const SIDEBAR_WIDTH = 280; // Define sidebar width here
+// ---------------------
 
-// Star Class Definition (moved outside the component to avoid re-creation on render)
+// Star Class Definition (Updated to receive sidebar width)
 class Star {
-    constructor(W, H, startX = null, startY = null) {
+    constructor(W, H, sidebarWidth, startX = null, startY = null) { // Added sidebarWidth
         const isNew = startX !== null;
         this.W = W;
         this.H = H;
+        this.sidebarWidth = sidebarWidth; // Store sidebar width
 
         if (isNew) {
+            // New star starts near the mouse position
             this.x = startX - W / 2;
             this.y = startY - H / 2;
             this.z = W;
         } else {
-            this.x = Math.random() * W - W / 2;
+            // Random start position (must exclude the sidebar area)
+            // X-coordinate is calculated relative to the new, smaller drawable area
+            this.x = Math.random() * (W - sidebarWidth) + sidebarWidth / 2 - W / 2;
             this.y = Math.random() * H - H / 2;
             this.z = Math.random() * W;
         }
         
         this.speedMultiplier = Math.random() * (MAX_SPEED - MIN_SPEED) + MIN_SPEED;
     }
+
+    // ... (update and reset methods remain the same) ...
 
     update(starsArray) {
         this.z -= this.W * this.speedMultiplier;
@@ -39,11 +50,13 @@ class Star {
     }
 
     reset() {
-        this.x = Math.random() * this.W - this.W / 2;
+        // Reset X is constrained to the non-sidebar area
+        this.x = Math.random() * (this.W - this.sidebarWidth) + this.sidebarWidth / 2 - this.W / 2;
         this.y = Math.random() * this.H - this.H / 2;
         this.z = this.W;
     }
 
+    // ... (draw method remains the same) ...
     draw(ctx) {
         const perspective = this.W / this.z;
         const xP = this.x * perspective + this.W / 2;
@@ -61,19 +74,16 @@ class Star {
 
 
 export default function Starfield() {
-    // 1. Refs for DOM elements
     const canvasRef = useRef(null);
     const animationFrameRef = useRef(null);
-    const starsRef = useRef([]); // Use a ref to hold the mutable stars array
+    const starsRef = useRef([]);
 
-    // 2. State for dimensions (useful for resize handling)
     const [dimensions, setDimensions] = useState({ 
         W: window.innerWidth, 
         H: window.innerHeight 
     });
     const { W, H } = dimensions;
 
-    // 3. Setup function (called on mount and resize)
     const setupCanvas = () => {
         const currentW = window.innerWidth;
         const currentH = window.innerHeight;
@@ -86,14 +96,13 @@ export default function Starfield() {
         }
     };
 
-    // 4. Star spawning logic
     const spawnStar = (x, y) => {
-        if (starsRef.current.length < MAX_STAR_COUNT) {
-            starsRef.current.push(new Star(W, H, x, y));
+        // Only spawn stars if the click/mouse is outside the sidebar area
+        if (x > SIDEBAR_WIDTH && starsRef.current.length < MAX_STAR_COUNT) {
+            starsRef.current.push(new Star(W, H, SIDEBAR_WIDTH, x, y));
         }
     };
 
-    // 5. Animation loop (runs via requestAnimationFrame)
     const animate = () => {
         const canvas = canvasRef.current;
         if (!canvas) return;
@@ -116,47 +125,47 @@ export default function Starfield() {
         animationFrameRef.current = requestAnimationFrame(animate);
     };
 
-    // --- useEffect Hooks ---
-
-    // Hook for Initial Setup, Animation Start, and Cleanup
+    // Initial Setup and Animation Start
     useEffect(() => {
         setupCanvas();
 
-        // Initialize stars
+        // Initialize stars (Pass SIDEBAR_WIDTH to the Star constructor)
         for (let i = 0; i < 800; i++) {
-            starsRef.current.push(new Star(W, H));
+            starsRef.current.push(new Star(W, H, SIDEBAR_WIDTH));
         }
 
-        // Start animation loop
         animationFrameRef.current = requestAnimationFrame(animate);
 
-        // Cleanup function on component unmount
         return () => {
             cancelAnimationFrame(animationFrameRef.current);
         };
-    }, [W, H]); // Rerun setup when W or H changes (on resize)
+    }, [W, H]);
 
-    // Hook for Mouse Listener (only needs to be set up once)
+    // Mouse Listener and Resize Hook
     useEffect(() => {
         const handleMouseMove = (event) => {
-            // Note: Mouse position is relative to the viewport (correct for canvas)
             spawnStar(event.clientX, event.clientY);
         };
 
         window.addEventListener('mousemove', handleMouseMove);
         window.addEventListener('resize', setupCanvas);
 
-        // Cleanup for event listeners
         return () => {
             window.removeEventListener('mousemove', handleMouseMove);
             window.removeEventListener('resize', setupCanvas);
         };
-    }, [W, H]); // Re-attach if dimensions change, though listeners primarily use current state
+    }, [W, H]);
 
     return (
         <div className="starfield-container" style={{ width: W, height: H }}>
+            {/* 2. Render the Sidebar first (z-index ensures it's on top) */}
+            <Sidebar /> 
+            
             <canvas ref={canvasRef} id="starfield" className="starfield-canvas" />
+            
+            {/* The info-text is now unnecessary as the Sidebar provides info */}
             <div className="info-text">
+                {/* Note: Mouse movement will only generate stars outside the sidebar now */}
             </div>
         </div>
     );
