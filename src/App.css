@@ -1,36 +1,68 @@
-/* App.css (or Starfield.css) */
+/* App.css */
 
 /* Base Styles for the Pitch Black Background */
 body, html, #root { 
-  /* #root is important in React to cover the whole page */
-  margin: 0;
-  padding: 0;
-  overflow: hidden;
-  background-color: #000000; /* PITCH BLACK */
-  font-family: sans-serif;
-  height: 100%;
-  width: 100%;
+    /* #root is important in React to cover the whole page */
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background-color: #000000; /* PITCH BLACK */
+    font-family: sans-serif;
+    height: 100%;
+    width: 100%;
 }
-
+  
 /* Canvas Styles */
 .starfield-canvas {
-  display: block;
-  background-color: #000000;
-  position: absolute;
-  top: 0;
-  left: 0;
-  z-index: 1;
+    display: block;
+    background-color: #000000;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1; /* Low z-index so text can overlay */
 }
-
-/* Info Text Styles */
+  
+/* Updated Info Text Styles for Centered Greeting */
+.main-content-overlay {
+    position: absolute;
+    
+    /* 🎯 CRITICAL CHANGE: Use a fixed pixel value to avoid initial rendering issues */
+    top: 300px; 
+    
+    left: 280px; 
+    width: calc(100% - 280px); 
+    
+    /* Remove transform: translateY(-50%) since we are using a fixed top value now */
+    /* transform: translateY(-50%); */ 
+    
+    z-index: 10; 
+    
+    display: flex;
+    flex-direction: column;
+    align-items: center; 
+}
+/* Also verify the .info-text uses static positioning inside the wrapper */
 .info-text {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  color: rgba(255, 255, 255, 0.2); /* Very faint white text */
-  font-size: 1.2rem;
-  text-align: center;
-  pointer-events: none;
-  z-index: 10;
+    position: static; 
+    width: 100%; 
+    text-align: center;
+    pointer-events: none;
+    margin: 0;
+    padding: 0;
+}
+  
+.greeting-hello {
+    font-size: 2.5rem;
+    font-weight: 300; /* Lighter weight for modern look */
+    margin: 0 0 8px 0;
+    /* Use a light blue color like the image */
+    color: #8ab4f8; 
+}
+  
+.greeting-question {
+    font-size: 3.5rem;
+    font-weight: 400; /* Normal weight */
+    margin: 0;
+    /* Use white/light gray for the main question */
+    color: #ffffff;
 }
