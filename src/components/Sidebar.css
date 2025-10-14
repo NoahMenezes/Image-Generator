@@ -1,154 +1,195 @@
+/*
+ * Sidebar CSS - Refined for Spacious and Modern Dark Theme
+ * --------------------------------------------------------
+ * Key Changes:
+ * 1. Increased base width and padding.
+ * 2. Simplified new-chat button (flatter design).
+ * 3. Increased spacing between recent chats.
+ * 4. Customized scrollbar for dark theme integration.
+ */
+
+:root {
+    /* Color Palette - Using consistent, space-themed colors */
+    --color-primary: #8ab4f8; /* Google Blue/Astro Blue */
+    --color-text-light: #e8eaed; /* Near-white */
+    --color-bg-dark: #0a0a19; /* Deep space background */
+    --color-bg-medium: #1e1e32;
+    --color-bg-sidebar: #0e0e1a; /* Slightly lighter than dark for depth */
+    --color-hover-bg: rgba(255, 255, 255, 0.1);
+    --color-selected-bg: rgba(138, 180, 248, 0.1);
+    --color-error: #f28b82;
+
+    /* Sidebar Widths: Increased for less clustering */
+    --sidebar-open-width: 320px;
+    --sidebar-closed-width: 65px; /* Slightly wider collapsed state */
+}
+
 .sidebar {
-    width: 280px;
+    width: var(--sidebar-open-width);
     height: 100vh;
     position: fixed;
     top: 0;
     left: 0;
-    background-color: rgba(10, 10, 25, 0.9); /* Dark semi-transparent background */
-    color: #e8eaed;
-    padding: 20px 15px;
+    background-color: var(--color-bg-sidebar);
+    color: var(--color-text-light);
+    padding: 25px 20px; /* Generous padding for breathing room */
     display: flex;
     flex-direction: column;
     z-index: 20;
-    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.5);
-    transition: width 0.3s ease, padding 0.3s ease; /* Transition for collapse */
-    overflow-y: hidden; /* Prevent main sidebar scroll */
+    /* Clean shadow, subtle separation */
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.8);
+    transition: width 0.3s ease, padding 0.3s ease;
+    overflow-y: hidden;
 }
 
 /* Collapsed State */
 .sidebar.collapsed {
-    width: 60px; /* Slimmer width when collapsed */
-    padding: 20px 10px;
-    align-items: center; /* Center items for icon-only view */
+    width: var(--sidebar-closed-width);
+    padding: 25px 12px;
+    align-items: center;
 }
 
 /* Sidebar Top Section */
 .sidebar-top {
-    margin-bottom: 20px;
+    margin-bottom: 25px;
     width: 100%;
 }
 
 .menu-header {
     display: flex;
-    justify-content: flex-start; /* Align menu icon to the left */
-    margin-bottom: 20px;
+    justify-content: flex-start;
+    margin-bottom: 25px;
 }
 
 .icon {
     font-size: 1.5rem;
     cursor: pointer;
-    transition: color 0.2s;
+    transition: all 0.2s;
+    color: var(--color-text-light);
+    padding: 8px;
+    border-radius: 8px;
 }
 
-.search-icon {
-    color: #8ab4f8;
+.icon:hover {
+    background-color: var(--color-hover-bg);
 }
 
-/* New Chat Button */
+/* New Chat Button (Clean, borderless style) */
 .new-chat-button {
-    background-color: rgba(138, 180, 248, 0.2);
-    color: #8ab4f8;
-    padding: 10px 15px;
-    border-radius: 20px;
+    background: var(--color-selected-bg);
+    color: var(--color-primary);
+    padding: 12px 15px;
+    border-radius: 12px;
     cursor: pointer;
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-start; /* Aligned left for clean look */
     align-items: center;
-    font-weight: 500;
-    transition: background-color 0.2s;
-    width: 100%; /* Ensure it spans the full width */
+    font-weight: 600;
+    font-size: 1rem;
+    transition: all 0.2s ease;
+    width: 100%;
+    /* Removed box-shadow for a flatter, cleaner look */
 }
 
 .new-chat-button:hover {
-    background-color: rgba(138, 180, 248, 0.3);
+    background: rgba(138, 180, 248, 0.15); /* Slightly darker on hover */
+    transform: none; /* No movement on hover */
 }
 
 .new-chat-button .icon {
-    font-size: 1.1rem;
-    margin-right: 10px;
+    font-size: 1.2rem;
+    margin-right: 12px; /* Increased margin */
+    color: var(--color-primary);
+    padding: 0;
 }
 
-/* Collapsed New Chat Button - Icon only */
+.new-chat-button .fullscreen-icon {
+    margin-left: auto; /* Push the fullscreen icon to the right */
+}
+
+/* Collapsed New Chat Button */
 .sidebar.collapsed .new-chat-button {
     width: 40px;
     height: 40px;
     padding: 0;
     justify-content: center;
+    border-radius: 50%;
 }
-
+.sidebar.collapsed .new-chat-button .new-chat-text,
+.sidebar.collapsed .new-chat-button .fullscreen-icon {
+    display: none;
+}
 .sidebar.collapsed .new-chat-button .icon {
     margin-right: 0;
 }
 
-.sidebar.collapsed .new-chat-button .fullscreen-icon {
-    display: none; /* Hide fullscreen icon when collapsed */
-}
 
 /* Search Bar Styling */
 .sidebar-search {
     display: flex;
     align-items: center;
-    background-color: rgba(255, 255, 255, 0.1);
-    border-radius: 8px;
-    padding: 5px 10px;
-    margin-bottom: 20px;
+    background-color: rgba(255, 255, 255, 0.08);
+    border-radius: 10px;
+    padding: 10px 12px;
+    margin-bottom: 25px;
+    border: none; /* Removed redundant border */
 }
 
 .sidebar-search .search-icon {
-    font-size: 1.2rem;
+    font-size: 1rem;
     margin-right: 10px;
+    color: #aaa;
 }
 
 .search-input {
     flex-grow: 1;
     background: none;
     border: none;
-    color: #e8eaed;
+    color: var(--color-text-light);
     outline: none;
-    padding: 5px 0;
-    font-size: 0.95rem;
+    font-size: 1rem;
+}
+.search-input::placeholder {
+    color: #aaa;
 }
 
 /* Sidebar Middle/Recent Section */
-.sidebar-section {
-    width: 100%;
-    /* Flex-grow for Recent section to take remaining space and allow scroll */
-}
-
 .recent-chats-section {
-    flex-grow: 1; 
-    overflow-y: auto; /* Enable scrolling for the chats list */
-    padding-right: 5px; /* Space for a cleaner scrollbar appearance */
+    flex-grow: 1;
+    overflow-y: auto;
+    padding-right: 5px;
 }
 
-/* Scrollbar styling (optional, for aesthetics) */
+/* Custom Scrollbar */
 .recent-chats-section::-webkit-scrollbar {
     width: 8px;
 }
 .recent-chats-section::-webkit-scrollbar-thumb {
-    background: rgba(255, 255, 255, 0.2);
+    background-color: rgba(138, 180, 248, 0.25);
     border-radius: 10px;
 }
 .recent-chats-section::-webkit-scrollbar-track {
-    background: transparent;
+    background-color: transparent;
 }
 
-
 .sidebar-section h3 {
-    font-size: 1rem;
+    font-size: 0.8rem; /* Smaller heading for structure */
     color: #aaa;
-    margin-top: 15px;
+    margin-top: 5px;
     margin-bottom: 10px;
     padding-left: 5px;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    font-weight: 500;
 }
 
 .sidebar-item {
-    position: relative; /* Needed for absolute positioning of actions */
+    position: relative;
     display: flex;
     align-items: center;
-    padding: 10px 5px;
-    margin-bottom: 5px;
-    border-radius: 8px;
+    padding: 12px 10px; /* Increased vertical padding */
+    margin-bottom: 6px; /* Increased spacing between items */
+    border-radius: 10px;
     cursor: pointer;
     font-size: 0.95rem;
     white-space: nowrap;
@@ -159,24 +200,28 @@
 }
 
 .sidebar-item:hover:not(.selected-chat) {
-    background-color: rgba(255, 255, 255, 0.1);
+    background-color: var(--color-hover-bg);
 }
 
 .item-icon {
-    font-size: 1.1rem;
+    font-size: 1rem;
     margin-right: 10px;
+    color: var(--color-primary);
 }
 
-.pin-icon {
-    font-size: 0.8rem;
-    margin-left: auto;
-    opacity: 0.5;
+.item-title {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
+/* Selected State - Subtle and clean */
 .selected-chat {
-    background-color: rgba(138, 180, 248, 0.15);
-    color: #8ab4f8;
-    font-weight: 500;
+    background-color: var(--color-selected-bg);
+    color: var(--color-primary);
+    font-weight: 600;
+    border-left: 3px solid var(--color-primary);
+    padding-left: 7px;
 }
 
 /* Chat Actions (Edit/Delete) */
@@ -186,57 +231,59 @@
     top: 50%;
     transform: translateY(-50%);
     display: flex;
-    gap: 8px;
-    background-color: inherit; /* Inherit the background for a clean look */
-    padding-left: 10px;
-    opacity: 0; /* Hidden by default */
+    gap: 5px;
+    background-color: var(--color-bg-sidebar);
+    padding-left: 15px;
+    opacity: 0;
     transition: opacity 0.2s;
 }
 
 .sidebar-item:hover .chat-actions,
 .selected-chat .chat-actions {
-    opacity: 1; /* Show on hover or when selected */
+    opacity: 1;
 }
 
 .action-icon {
-    font-size: 0.8rem;
+    font-size: 0.85rem;
     cursor: pointer;
-    padding: 3px;
-    border-radius: 4px;
-    /* Use a darker background on hover for the icons themselves */
+    padding: 5px;
+    border-radius: 6px;
+    color: #ccc;
 }
 
-.edit-icon:hover {
-    background-color: rgba(0, 0, 0, 0.2);
+.action-icon:hover {
+    background-color: rgba(255, 255, 255, 0.2);
+    color: var(--color-text-light);
 }
 
 .delete-icon:hover {
-    color: #f44336; /* Red on hover */
-    background-color: rgba(0, 0, 0, 0.2);
+    color: var(--color-error);
 }
 
 .no-results {
-    padding: 10px 5px;
+    padding: 10px 10px;
     color: #aaa;
     font-style: italic;
     font-size: 0.9rem;
 }
 
-/* Sidebar Bottom Section */
+/* Sidebar Bottom Section (Settings/Profile) */
 .sidebar-bottom {
     margin-top: auto;
     padding-top: 20px;
-    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
     width: 100%;
 }
 
 .sidebar-bottom .sidebar-item {
     color: #ccc;
-    justify-content: flex-start; /* Align left */
+    justify-content: flex-start;
+    padding: 10px 10px;
 }
 
-.sidebar-bottom .icon {
-    font-size: 1.2rem;
+.sidebar-bottom .sidebar-item .icon {
+    font-size: 1.1rem;
+    margin-right: 10px;
 }
 
 /* Collapsed Sidebar Bottom Item */
@@ -247,4 +294,10 @@
 
 .sidebar.collapsed .sidebar-bottom .icon {
     margin-right: 0;
+    font-size: 1.5rem;
+}
+
+.sidebar.collapsed .sidebar-bottom .item-title,
+.sidebar.collapsed .item-title {
+    display: none;
 }

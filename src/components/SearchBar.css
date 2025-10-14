@@ -1,53 +1,88 @@
-/* src/components/SearchBar.css */
+/* ------------------------ */
+/* --- SEARCH BAR STYLES ---*/
+/* ------------------------ */
+
+:root {
+    --color-primary: #8ab4f8; 
+    --color-text-light: #e8eaed;
+    --color-shadow-light: rgba(138, 180, 248, 0.4);
+}
 
 .searchbar-container {
     display: flex;
     align-items: center;
     width: 100%;
-    max-width: 700px;
-    background-color: rgba(50, 50, 50, 0.9);
-    border-radius: 30px;
-    padding: 10px 15px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
-    transition: box-shadow 0.3s ease;
+    max-width: 750px;
+    background-color: rgba(30, 30, 40, 0.95); /* Darker, less transparent */
+    border-radius: 35px; /* More rounded */
+    padding: 12px 20px;
+    /* Prominent shadow and subtle light border/glow */
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.8), 0 0 10px rgba(138, 180, 248, 0.2);
+    border: 1px solid rgba(138, 180, 248, 0.1);
+    transition: all 0.3s ease;
 }
 
 .searchbar-container:focus-within {
-    box-shadow: 0 4px 20px rgba(138, 180, 248, 0.4);
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.9), 0 0 25px var(--color-shadow-light); /* Stronger glow on focus */
 }
 
 .searchbar-input {
     flex-grow: 1;
     border: none;
     background: transparent;
-    color: #ffffff;
-    font-size: 1.1rem;
+    color: var(--color-text-light);
+    font-size: 1.15rem;
     padding: 5px 10px;
     outline: none;
 }
 
 .searchbar-input::placeholder {
     color: #aaa;
+    opacity: 0.7;
 }
 
 .searchbar-button {
     /* Icon buttons styling */
     background: none;
     border: none;
-    color: #8ab4f8; /* Light blue color for icons */
     font-size: 1.5rem;
     cursor: pointer;
     margin-left: 10px;
-    padding: 5px;
-    transition: color 0.2s;
+    padding: 8px; /* Larger hit area */
+    border-radius: 50%;
+    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Fun, bouncy transition */
 }
 
 .searchbar-button:hover:not(:disabled) {
-    opacity: 1;
+    background-color: rgba(138, 180, 248, 0.1);
     transform: scale(1.1);
+}
+
+.mic-button {
+    /* Subtle color for microphone */
+    opacity: 0.7;
+}
+
+.send-button {
+    /* Highlight the send button */
+    background-color: var(--color-primary);
+    color: #000;
+    box-shadow: 0 0 15px var(--color-shadow-light);
+    font-size: 1.2rem;
+    padding: 10px;
+    line-height: 1;
+}
+
+.send-button:hover:not(:disabled) {
+    background-color: var(--color-primary);
+    box-shadow: 0 0 20px var(--color-shadow-light), 0 0 5px var(--color-primary);
+    transform: scale(1.05);
 }
 
 .searchbar-button:disabled {
     cursor: not-allowed;
-    opacity: 0.5;
+    opacity: 0.4;
+    background-color: transparent;
+    box-shadow: none;
+    transform: scale(1);
 }

@@ -7,14 +7,13 @@ const SearchBar = ({ onSearchSubmit = () => {} }) => {
     
     const handleSubmit = (event) => {
         try {
-            // Prevent form submission if this were a form (Good defensive practice)
             if (event && event.preventDefault) {
                 event.preventDefault();
             }
             
             if (input.trim() && typeof onSearchSubmit === 'function') {
                 onSearchSubmit(input.trim());
-                setInput(''); // Clear the input field after submitting
+                setInput(''); 
             }
         } catch (error) {
             console.error('Error in handleSubmit:', error);
@@ -34,24 +33,24 @@ const SearchBar = ({ onSearchSubmit = () => {} }) => {
     return (
         <div className="searchbar-container">
             <input 
-                placeholder="Ask me anything..." 
+                placeholder="Describe your creative vision..." 
                 className="searchbar-input"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 onKeyDown={handleKeyDown}
             />
-            {/* Microphone button (first button) */}
-            <button className="searchbar-button" disabled={!input.trim()}>
-                🎤
+            {/* Microphone button (first button) - Placeholder */}
+            <button className="searchbar-button mic-button" disabled={!input.trim()}>
+                <span role="img" aria-label="Microphone">🎤</span>
             </button>
             
-            {/* 🎯 Submit button, now using a standard right arrow (send) icon */}
+            {/* Submit button */}
             <button 
                 className="searchbar-button send-button" 
                 onClick={handleSubmit} 
                 disabled={!input.trim()}
             >
-                ➡️ {/* Changed from ✨ to ➡️ for a typical "send" or "enter" visual */}
+                <span role="img" aria-label="Send">🚀</span>
             </button>
         </div>
     );

@@ -1,68 +1,85 @@
-import { GoogleGenerativeAI } from '@google/generative-ai'; 
-
-// ⚠️ IMPORTANT: Add your Gemini API Key here or use environment variables 
-// Get your free API key from: https://makersuite.google.com/app/apikey 
-const GEMINI_API_KEY = process.env.REACT_APP_GEMINI_API_KEY; 
-
-// --- CONFIGURATION ---
-// Model used for image generation
-const IMAGEN_MODEL = 'imagen-3.0-generate-002';
+// Configuration for Gemini API
+const GEMINI_API_KEY = process.env.REACT_APP_GEMINI_API_KEY || '';
+const IMAGE_GEN_MODEL = 'gemini-2.0-flash';
 const API_BASE_URL = 'https://generativelanguage.googleapis.com/v1beta/models';
 
 /**
- * Generate an image using the Imagen model.
- * * This function uses the `fetch` API to call the specialized Imagen prediction
- * endpoint, as required for image generation.
- * * @param {string} promptText - The user's text prompt for image generation.
- * @returns {string} The Base64-encoded image data string (or an error message).
+ * Generate an image using the Gemini API
+ * @param {string} prompt - The text prompt for image generation
+ * @returns {Promise<string>} Base64-encoded image data or error message
  */
-export async function generateImageResponse(promptText) {
-    if (!GEMINI_API_KEY) { 
-        throw new Error('❌ Gemini API key not found! Please add REACT_APP_GEMINI_API_KEY to your .env file'); 
-    } 
-
-    if (!promptText || promptText.trim() === '') {
-        return "❌ Error: Please enter a prompt to generate an image.";
+export const generateImageResponse = async (prompt) => {
+    if (!GEMINI_API_KEY) {
+        return '❌ Error: Missing Gemini API Key. Please set REACT_APP_GEMINI_API_KEY in your environment variables.';
     }
+    
 
-    const payload = { 
-        instances: [{ prompt: promptText }], 
-        parameters: { 
-            sampleCount: 1,
-            aspectRatio: "1:1", 
-            outputMimeType: "image/jpeg"
-        } 
+    const apiUrl = `${API_BASE_URL}/${IMAGE_GEN_MODEL}:generateContent?key=${GEMINI_API_KEY}`;
+    
+    const payload = {
+        contents: [{
+            parts: [{
+                text: `Generate a detailed image of: ${prompt}. The image should be photorealistic and high quality.`
+            }]
+        }],
+        generationConfig: {
+            temperature: 0.9,
+            topK: 1,
+            topP: 1,
+            maxOutputTokens: 2048,
+        },
+        safetySettings: [
+            {
+                category: 'HARM_CATEGORY_HARASSMENT',
+                threshold: 'BLOCK_NONE'
+            },
+            {
+                category: 'HARM_CATEGORY_HATE_SPEECH',
+                threshold: 'BLOCK_NONE'
+            },
+            {
+                category: 'HARM_CATEGORY_SEXUALLY_EXPLICIT',
+                threshold: 'BLOCK_NONE'
+            },
+            {
+                category: 'HARM_CATEGORY_DANGEROUS_CONTENT',
+                threshold: 'BLOCK_NONE'
+            }
+        ]
     };
 
-    const apiUrl = `${API_BASE_URL}/${IMAGEN_MODEL}:predict?key=${GEMINI_API_KEY}`;
-
-    try { 
-        console.log(`🤖 Sending image generation request to ${IMAGEN_MODEL}...`); 
-
+    try {
+        console.log(`Sending request to ${IMAGE_GEN_MODEL}...`);
+        
         const response = await fetch(apiUrl, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
         });
         
+        if (!response.ok) {
+            const errorData = await response.json();
+            console.error('API Error:', errorData);
+            return `❌ API Error: ${errorData.error?.message || 'Unknown error occurred'}`;
+        }
+        
         const result = await response.json();
-
-        if (result.error) {
-            console.error('❌ API Error Details:', result.error);
-            return `❌ API Error: ${result.error.message}`;
-        }
-
-        // Extract Base64 encoded image data
-        if (result.predictions && result.predictions.length > 0 && result.predictions[0].bytesBase64Encoded) {
-            console.log('✅ Image data received.');
-            // Return the raw base64 string
-            return result.predictions[0].bytesBase64Encoded; 
+        
+        // Extract the image data from the response
+        const imageData = result.candidates?.[0]?.content?.parts?.[0]?.inlineData?.data;
+        
+        if (imageData) {
+            console.log('✅ Image generated successfully');
+            return imageData;
         } else {
-            return "❌ Error: Failed to retrieve image data from the prediction. Response might have been blocked or the API structure changed.";
+            const blockReason = result.candidates?.[0]?.finishReason;
+            if (blockReason === 'SAFETY') {
+                return '❌ Error: Image generation blocked due to safety settings. Please try a different prompt.';
+            }
+            return '❌ Error: Failed to generate image. The response did not contain valid image data.';
         }
-
-    } catch (error) { 
-        console.error('❌ Error during image generation:', error); 
-        return `❌ Network Error: ${error.message}. Check your connection or API configuration.`; 
-    } 
-}
+    } catch (error) {
+        console.error('Error during image generation:', error);
+        return `❌ Network Error: ${error.message}. Please check your internet connection.`;
+    }
+};

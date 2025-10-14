@@ -1,14 +1,16 @@
 import React, { useRef, useEffect, useState, useCallback, useContext } from 'react';
 import './App.css';
-import Sidebar, { SidebarProvider, SidebarContext } from './components/Sidebar'; // Import Provider and Context
+import Sidebar, { SidebarProvider, SidebarContext } from './components/Sidebar';
 import SearchBar from './components/SearchBar';
-import { generateTextResponse } from './config/Gemini'; 
+import { generateImageResponse } from './config/Gemini';
 
-// --- CONFIGURATION (Keeping sidebar width consistent) ---
+// --- CONFIGURATION ---
 const MAX_STAR_COUNT = 1200;
 const MIN_SPEED = 0.0005;
 const MAX_SPEED = 0.003;
-const SIDEBAR_WIDTH = 320; 
+// NOTE: Must match the width defined in Sidebar.css and used in the CSS variable below
+const SIDEBAR_WIDTH_OPEN = 350; // <-- UPDATED to 350px
+const SIDEBAR_WIDTH_CLOSED = 60;
 // ---------------------
 
 // Star Class Definition (remains the same)
@@ -19,12 +21,15 @@ class Star {
         this.H = H;
         this.sidebarWidth = sidebarWidth;
 
+        // Note: Star generation is optimized to happen outside the sidebar area
         if (isNew) {
             this.x = startX - W / 2;
             this.y = startY - H / 2;
             this.z = W;
         } else {
-            this.x = Math.random() * (W - sidebarWidth) + sidebarWidth / 2 - W / 2;
+            // Generate star in the main content area (right of the sidebar)
+            const availableW = W - sidebarWidth;
+            this.x = Math.random() * availableW + sidebarWidth - W / 2;
             this.y = Math.random() * H - H / 2;
             this.z = Math.random() * W;
         }
@@ -45,7 +50,9 @@ class Star {
     }
 
     reset() {
-        this.x = Math.random() * (this.W - this.sidebarWidth) + this.sidebarWidth / 2 - this.W / 2;
+        const currentSidebarWidth = this.sidebarWidth;
+        const availableW = this.W - currentSidebarWidth;
+        this.x = Math.random() * availableW + currentSidebarWidth - this.W / 2;
         this.y = Math.random() * this.H - this.H / 2;
         this.z = this.W;
     }
@@ -68,28 +75,31 @@ class Star {
 
 // New component wrapper to use Context
 function AppContent() {
-    const { currentChatId, updateChatTitle, setCurrentChatId } = useContext(SidebarContext);
+    const { 
+        currentChatId, 
+        updateChatTitle, 
+        setCurrentChatId,
+        isSidebarOpen
+    } = useContext(SidebarContext);
+
+    // Determine the current width for star spawning logic
+    const currentSidebarWidth = isSidebarOpen ? SIDEBAR_WIDTH_OPEN : SIDEBAR_WIDTH_CLOSED;
 
     // State to hold all chat messages, keyed by chat ID
-    // { chatId: [{ role: 'user', text: '...' }, { role: 'model', text: '...' }], ... }
     const [chatHistory, setChatHistory] = useState({});
     
     // Get current chat messages
     const messages = chatHistory[currentChatId] || [];
 
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null); // Used for critical network/API key errors only
+    const [error, setError] = useState(null); 
     
     const mainContentRef = useRef(null); 
 
-    // Function to add a message to the current chat
     const addMessage = useCallback((role, text) => {
-        const message = { role, text, timestamp: Date.now() };
+        const message = { role, text, timestamp: Date.now() }; 
         setChatHistory(prevHistory => {
-            // Use currentChatId state (which might be null if it's the very first message)
             const id = currentChatId || Date.now(); 
-            
-            // If currentChatId was null, update it now for the next message/action
             if (!currentChatId) {
                 setCurrentChatId(id);
             }
@@ -106,7 +116,6 @@ function AppContent() {
     const handleSearchSubmit = useCallback(async (query) => { 
         if (!query || loading) return;
         
-        // Ensure a chat is selected/started
         const chatID = currentChatId || Date.now();
         if (!currentChatId) {
             setCurrentChatId(chatID);
@@ -119,23 +128,21 @@ function AppContent() {
         setError(null);
     
         try {
-            const apiResult = await generateTextResponse(query); 
+            const apiResult = await generateImageResponse(query);
     
             // 2. Determine role and content
             let modelResponse = apiResult;
-            let responseRole = 'model';
+            let responseRole = 'image'; // Role is 'image' for successful output
             
-            if (typeof apiResult === 'string' && apiResult.startsWith('❌')) {
-                setError(apiResult); // Display the error message in the console and potentially separately
+            if (typeof apiResult === 'string' && (apiResult.startsWith('❌') || apiResult.startsWith('DEMO'))) {
+                setError(apiResult);
                 responseRole = 'error'; 
-                // Don't save general errors to the main chat history, save as error message instead
             } 
             
-            // 3. Save MODEL response to history
+            // 3. Save MODEL response (Base64 string or error message) to history
             addMessage(responseRole, modelResponse);
 
             // 4. Update Sidebar Chat Title (only if it's the first message in this chat)
-            // Use the query itself to generate the title
             if (messages.length === 0) {
                 updateChatTitle(chatID, query); 
             }
@@ -148,10 +155,10 @@ function AppContent() {
         } finally {
             setLoading(false);
         }
-    }, [generateTextResponse, currentChatId, updateChatTitle, messages.length, addMessage, setCurrentChatId, loading]);
+    }, [currentChatId, updateChatTitle, messages.length, addMessage, setCurrentChatId, loading]);
 
 
-    // Effect to scroll to the bottom when new message is added
+    // Effect to scroll to the bottom when new message is added 
     useEffect(() => {
         if (mainContentRef.current) {
             mainContentRef.current.scrollTop = mainContentRef.current.scrollHeight;
@@ -159,7 +166,7 @@ function AppContent() {
     }, [messages.length]); 
 
 
-    // --- Canvas/Star Logic (remains the same) ---
+    // --- Canvas/Star Logic ---
     const canvasRef = useRef(null);
     const animationFrameRef = useRef(null);
     const starsRef = useRef([]);
@@ -183,8 +190,9 @@ function AppContent() {
     };
 
     const spawnStar = (x, y) => {
-        if (x > SIDEBAR_WIDTH && starsRef.current.length < MAX_STAR_COUNT) {
-            starsRef.current.push(new Star(W, H, SIDEBAR_WIDTH, x, y));
+        // Only spawn stars in the main content area
+        if (x > currentSidebarWidth && starsRef.current.length < MAX_STAR_COUNT) {
+            starsRef.current.push(new Star(W, H, currentSidebarWidth, x, y));
         }
     };
 
@@ -216,7 +224,7 @@ function AppContent() {
             setupCanvas();
             if (starsRef.current.length === 0) {
                 for (let i = 0; i < 800; i++) {
-                    starsRef.current.push(new Star(W, H, SIDEBAR_WIDTH));
+                    starsRef.current.push(new Star(W, H, currentSidebarWidth));
                 }
             }
             animationFrameRef.current = requestAnimationFrame(animate);
@@ -228,7 +236,7 @@ function AppContent() {
                 cancelAnimationFrame(animationFrameRef.current);
             }
         };
-    }, [W, H]);
+    }, [W, H, currentSidebarWidth]);
 
     useEffect(() => {
         const handleMouseMove = (event) => {
@@ -240,14 +248,19 @@ function AppContent() {
             window.removeEventListener('mousemove', handleMouseMove);
             window.removeEventListener('resize', setupCanvas);
         };
-    }, [W, H]);
+    }, [W, H, currentSidebarWidth]);
     
-    // --- RENDER ---
+    // Set a CSS variable to control the main content position based on sidebar state
+    const containerStyle = {
+        '--sidebar-current-width': `${currentSidebarWidth}px`,
+        width: W, 
+        height: H
+    };
     
     const contentClass = messages.length > 0 ? "main-content-overlay result-mode" : "main-content-overlay initial-mode";
 
     return (
-        <div className="starfield-container" style={{ width: W, height: H }}>
+        <div className="starfield-container" style={containerStyle}>
             <Sidebar />
             <canvas ref={canvasRef} id="starfield" className="starfield-canvas" />
             
@@ -261,16 +274,23 @@ function AppContent() {
                             key={index} 
                             className={`chat-message ${msg.role}-message ${msg.role === 'error' ? 'error-text' : ''}`}
                         >
-                            {/* Display different header/icon based on role */}
                             <div className="message-header">
-                                {msg.role === 'user' ? 'You' : 'Gemini'}
+                                {msg.role === 'user' ? 'You' : 'Model Output'}
                             </div>
 
-                            {/* Display text content */}
                             <div className="message-content">
-                                <p style={{ whiteSpace: 'pre-wrap' }}>
-                                    {msg.text}
-                                </p>
+                                {/* Conditional rendering based on role: if role is 'image' and text is Base64 data, show img */}
+                                {msg.role === 'image' && msg.text.length > 100 ? (
+                                    <img
+                                        src={`data:image/jpeg;base64,${msg.text}`}
+                                        alt="Generated content"
+                                        className="generated-image"
+                                    />
+                                ) : (
+                                    <p style={{ whiteSpace: 'pre-wrap' }}>
+                                        {msg.text}
+                                    </p>
+                                )}
                             </div>
                         </div>
                     ))}
@@ -278,14 +298,14 @@ function AppContent() {
                     {/* Default Greeting (Only show if history is empty) */}
                     {messages.length === 0 && !loading && (
                         <div className="info-text">
-                            <h1 className="greeting-hello">Hello, Noah</h1>
-                            <h2 className="greeting-question">What should we do today?</h2>
+                            <h1 className="greeting-hello">Hello, Creator!</h1>
+                            <h2 className="greeting-question">What vision will you bring to life today?</h2>
                         </div>
                     )}
                 </div>
 
                 {/* Loading Indicator (Moves with the search bar) */}
-                {loading && <div className="loading-indicator">🌌 Generating your response...</div>}
+                {loading && <div className="loading-indicator">🌌 Generating your image... Hold tight!</div>}
                 
                 {/* SearchBar remains fixed at the bottom of the main-content-overlay */}
                 <SearchBar onSearchSubmit={handleSearchSubmit} />

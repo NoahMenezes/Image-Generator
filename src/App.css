@@ -1,28 +1,51 @@
-/* Base Styles for the Pitch Black Background (unchanged) */
+/* -------------------- */
+/* --- GLOBAL THEME --- */
+/* -------------------- */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+
+:root {
+    /* Colors */
+    --color-primary: #8ab4f8; /* Gemini Blue */
+    --color-secondary: #9cdcfe; /* User Blue */
+    --color-text-light: #e8eaed;
+    --color-bg-dark: #0a0a19;
+    --color-bg-medium: #1e1e32;
+    --color-error: #f44336;
+    --color-shadow-light: rgba(138, 180, 248, 0.4);
+    --color-shadow-medium: rgba(138, 180, 248, 0.15);
+    
+    /* Layout */
+    --sidebar-open-width: 280px;
+    --sidebar-closed-width: 60px;
+}
+
 body, html, #root { 
     margin: 0;
     padding: 0;
     overflow-x: hidden;
-    background-color: #000000;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+    background-color: var(--color-bg-dark);
+    font-family: 'Inter', sans-serif;
     height: 100%;
     width: 100%;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
 
-/* Container for the entire application (unchanged) */
+/* Container for the entire application (Controls dynamic width for main content) */
 .starfield-container {
     position: relative;
     width: 100%;
     height: 100vh;
     overflow: hidden;
+    /* This variable is set dynamically in App.js based on sidebar state */
+    --sidebar-width: var(--sidebar-current-width, var(--sidebar-open-width)); 
 }
  
-/* Canvas Styles (unchanged) */
+/* Canvas Styles (Subtle background gradient added) */
 .starfield-canvas {
     display: block;
-    background-color: #000000;
+    background: linear-gradient(180deg, rgba(0,0,0,1) 0%, var(--color-bg-dark) 100%);
     position: absolute;
     top: 0;
     left: 0;
@@ -32,7 +55,8 @@ body, html, #root {
 /* Wrapper for all main content (Chat History + Fixed SearchBar) */
 .main-content-overlay {
     position: absolute;
-    left: var(--sidebar-width, 320px); 
+    /* Use the dynamic width variable */
+    left: var(--sidebar-width); 
     right: 0;
     top: 0;
     bottom: 0;
@@ -42,13 +66,13 @@ body, html, #root {
     align-items: center;
     padding: 0 20px;
     box-sizing: border-box;
+    transition: left 0.3s ease; /* Smooth transition when sidebar opens/closes */
 }
 
 /* Area that scrolls (Chat History) */
 .content-scroll-area {
     flex-grow: 1; 
     width: 100%;
-    /* Added space at the top for aesthetic margin */
     padding: 50px 0 100px 0; /* Ensures last message clears the fixed search bar */
     overflow-y: auto; 
     display: flex;
@@ -56,13 +80,13 @@ body, html, #root {
     align-items: center;
     /* Custom scrollbar styles */
     scrollbar-width: thin;
-    scrollbar-color: #8ab4f8 rgba(255, 255, 255, 0.1);
+    scrollbar-color: var(--color-primary) rgba(255, 255, 255, 0.1);
 }
 .content-scroll-area::-webkit-scrollbar {
     width: 8px;
 }
 .content-scroll-area::-webkit-scrollbar-thumb {
-    background-color: #8ab4f8;
+    background-color: var(--color-primary);
     border-radius: 4px;
 }
 .content-scroll-area::-webkit-scrollbar-track {
@@ -81,7 +105,7 @@ body, html, #root {
 }
 
 
-/* Info Text Styles for Centered Greeting (unchanged) */
+/* Info Text Styles for Centered Greeting (Enhanced with neon glow) */
 .info-text {
     position: relative; 
     width: 100%; 
@@ -91,96 +115,144 @@ body, html, #root {
 }
  
 .greeting-hello {
-    font-size: 2.5rem;
+    font-size: 3rem;
     font-weight: 300;
     margin: 0 0 8px 0;
-    color: #8ab4f8; 
-    text-shadow: 0 0 10px rgba(138, 180, 248, 0.5);
+    color: var(--color-primary); 
+    text-shadow: 0 0 15px var(--color-shadow-light); /* Stronger glow */
 }
  
 .greeting-question {
-    font-size: 3.5rem;
-    font-weight: 400;
+    font-size: 4rem;
+    font-weight: 700;
     margin: 0;
-    color: #ffffff;
+    color: var(--color-text-light);
     line-height: 1.2;
+    background: linear-gradient(90deg, #b0c4de, #ffffff, #b0c4de);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 0 5px rgba(255, 255, 255, 0.5); /* Subtle white glow */
 }
 
-/* --- CHAT MESSAGE STYLES (NEW) --- */
+/* --- CHAT MESSAGE STYLES (Sleek, Layered Design) --- */
 .chat-message {
     width: 100%;
     max-width: 800px;
     padding: 20px;
-    margin-bottom: 20px;
-    border-radius: 12px;
+    margin-bottom: 25px;
+    border-radius: 16px; /* Slightly larger radius */
     text-align: left;
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(5px); /* Add a subtle blur effect */
+    border: 1px solid rgba(255, 255, 255, 0.05);
     line-height: 1.6;
+    transition: all 0.3s ease;
 }
 
 .message-header {
-    font-weight: 600;
-    margin-bottom: 10px;
-    font-size: 1.1rem;
+    font-weight: 700;
+    margin-bottom: 15px;
+    font-size: 1.2rem;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
 }
 
 .user-message {
-    background-color: rgba(30, 30, 30, 0.9);
-    color: #e8eaed;
+    background-color: rgba(30, 30, 30, 0.8);
+    color: var(--color-text-light);
+    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.5);
 }
 
 .user-message .message-header {
-    color: #9cdcfe; 
+    color: var(--color-secondary); 
 }
 
 .model-message {
-    background-color: rgba(40, 40, 60, 0.85); 
-    color: #ffffff;
+    background-color: var(--color-bg-medium); 
+    color: var(--color-text-light);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6), 0 0 5px var(--color-shadow-medium) inset;
 }
 
 .model-message .message-header {
-    color: #8ab4f8; 
+    color: var(--color-primary); 
 }
 
 .error-text {
-    background-color: rgba(255, 0, 0, 0.15);
-    color: #f44336;
-    border: 1px solid #f44336;
+    background-color: rgba(255, 0, 0, 0.1);
+    color: var(--color-error);
+    border: 1px solid var(--color-error);
+    box-shadow: 0 0 15px rgba(244, 67, 54, 0.5);
 }
 .error-text .message-header {
-    color: #f44336;
+    color: var(--color-error);
 }
+
+/* Style for the generated image */
+.generated-image {
+    width: auto;
+    max-width: 100%;
+    height: auto;
+    max-height: 600px;
+    border-radius: 12px;
+    /* Stronger, more distinct glow for the generated image */
+    box-shadow: 0 0 25px var(--color-shadow-light), 0 0 5px var(--color-primary);
+    transition: transform 0.3s ease;
+    cursor: zoom-in;
+}
+
+.generated-image:hover {
+    transform: scale(1.01);
+}
+
 /* --- END CHAT MESSAGE STYLES --- */
 
 
 .loading-indicator {
-    color: #8ab4f8;
-    font-size: 1.5rem;
+    color: var(--color-primary);
+    font-size: 1.2rem;
+    font-weight: 500;
     margin-bottom: 20px;
     position: absolute;
     bottom: 100px; 
+    padding: 10px 20px;
+    border-radius: 25px;
+    background-color: rgba(30, 30, 50, 0.9);
+    box-shadow: 0 0 15px var(--color-shadow-light);
 }
 
 /* Search Bar Positioning (FIXED) */
 .searchbar-container {
     position: absolute; 
-    bottom: 20px;
+    bottom: 40px; /* Moved up slightly */
     left: 50%;
     transform: translateX(-50%);
     width: 90%;
-    max-width: 700px;
+    max-width: 750px; /* Slightly wider */
     z-index: 50;
     margin: 0;
 }
 
-/* Responsive adjustments (unchanged) */
+/* Responsive adjustments */
 @media (max-width: 768px) {
     .main-content-overlay {
         left: 0; 
-        max-width: 100%;
+        padding: 0 10px;
     }
+    
+    .main-content-overlay.result-mode .content-scroll-area {
+        padding-top: 20px;
+    }
+    
+    .greeting-hello {
+        font-size: 2rem;
+    }
+     
+    .greeting-question {
+        font-size: 2.5rem;
+    }
+    
+    /* Ensure search bar stays visible */
     .searchbar-container {
-        left: 50%;
-        transform: translateX(-50%);
+        max-width: 95%;
+        bottom: 20px;
     }
 }
