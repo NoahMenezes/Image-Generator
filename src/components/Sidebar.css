@@ -1,64 +1,53 @@
-/*
- * Sidebar CSS - Refined for Spacious and Modern Dark Theme
- * --------------------------------------------------------
- * Key Changes:
- * 1. Increased base width and padding.
- * 2. Simplified new-chat button (flatter design).
- * 3. Increased spacing between recent chats.
- * 4. Customized scrollbar for dark theme integration.
- */
-
 :root {
-    /* Color Palette - Using consistent, space-themed colors */
-    --color-primary: #8ab4f8; /* Google Blue/Astro Blue */
-    --color-text-light: #e8eaed; /* Near-white */
-    --color-bg-dark: #0a0a19; /* Deep space background */
+    --color-primary: #8ab4f8; 
+    --color-text-light: #e8eaed;
+    --color-bg-dark: #0a0a19;
     --color-bg-medium: #1e1e32;
-    --color-bg-sidebar: #0e0e1a; /* Slightly lighter than dark for depth */
-    --color-hover-bg: rgba(255, 255, 255, 0.1);
-    --color-selected-bg: rgba(138, 180, 248, 0.1);
-    --color-error: #f28b82;
-
-    /* Sidebar Widths: Increased for less clustering */
-    --sidebar-open-width: 320px;
-    --sidebar-closed-width: 65px; /* Slightly wider collapsed state */
+    --color-shadow-light: rgba(138, 180, 248, 0.4);
+    --color-shadow-medium: rgba(138, 180, 248, 0.15);
+    
+    /* UPDATED: Sidebar width increased to 350px */
+    --sidebar-open-width: 350px; 
+    --sidebar-closed-width: 60px;
 }
 
 .sidebar {
+    /* Use variables for dynamic sizing */
     width: var(--sidebar-open-width);
     height: 100vh;
     position: fixed;
     top: 0;
     left: 0;
-    background-color: var(--color-bg-sidebar);
+    /* Deeper, more saturated background */
+    background-color: rgba(15, 15, 30, 0.95); 
     color: var(--color-text-light);
-    padding: 25px 20px; /* Generous padding for breathing room */
+    padding: 20px 15px;
     display: flex;
     flex-direction: column;
     z-index: 20;
-    /* Clean shadow, subtle separation */
-    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.8);
-    transition: width 0.3s ease, padding 0.3s ease;
+    /* Added subtle vertical glow for separation */
+    box-shadow: 4px 0 15px rgba(0, 0, 0, 0.6), 1px 0 0 0 rgba(138, 180, 248, 0.1);
+    transition: width 0.3s ease, padding 0.3s ease; 
     overflow-y: hidden;
 }
 
 /* Collapsed State */
 .sidebar.collapsed {
     width: var(--sidebar-closed-width);
-    padding: 25px 12px;
-    align-items: center;
+    padding: 20px 10px;
+    align-items: center; 
 }
 
 /* Sidebar Top Section */
 .sidebar-top {
-    margin-bottom: 25px;
+    margin-bottom: 20px;
     width: 100%;
 }
 
 .menu-header {
     display: flex;
     justify-content: flex-start;
-    margin-bottom: 25px;
+    margin-bottom: 20px;
 }
 
 .icon {
@@ -66,48 +55,48 @@
     cursor: pointer;
     transition: all 0.2s;
     color: var(--color-text-light);
-    padding: 8px;
+    padding: 5px;
     border-radius: 8px;
 }
 
 .icon:hover {
-    background-color: var(--color-hover-bg);
+    background-color: rgba(255, 255, 255, 0.1);
 }
 
-/* New Chat Button (Clean, borderless style) */
+.sidebar.collapsed .icon {
+    font-size: 1.2rem;
+}
+
+/* New Chat Button (Enhanced with gradient/glow) */
 .new-chat-button {
-    background: var(--color-selected-bg);
+    background: linear-gradient(90deg, rgba(138, 180, 248, 0.2), rgba(138, 180, 248, 0.1));
     color: var(--color-primary);
-    padding: 12px 15px;
+    padding: 10px 15px;
     border-radius: 12px;
     cursor: pointer;
     display: flex;
-    justify-content: flex-start; /* Aligned left for clean look */
+    justify-content: space-between;
     align-items: center;
     font-weight: 600;
-    font-size: 1rem;
-    transition: all 0.2s ease;
+    transition: all 0.3s ease;
     width: 100%;
-    /* Removed box-shadow for a flatter, cleaner look */
+    box-shadow: 0 0 5px rgba(138, 180, 248, 0.3);
 }
 
 .new-chat-button:hover {
-    background: rgba(138, 180, 248, 0.15); /* Slightly darker on hover */
-    transform: none; /* No movement on hover */
+    background: linear-gradient(90deg, rgba(138, 180, 248, 0.3), rgba(138, 180, 248, 0.2));
+    box-shadow: 0 0 15px var(--color-shadow-light);
+    transform: translateY(-1px);
 }
 
 .new-chat-button .icon {
     font-size: 1.2rem;
-    margin-right: 12px; /* Increased margin */
+    margin-right: 10px;
     color: var(--color-primary);
     padding: 0;
 }
 
-.new-chat-button .fullscreen-icon {
-    margin-left: auto; /* Push the fullscreen icon to the right */
-}
-
-/* Collapsed New Chat Button */
+/* Collapsed New Chat Button - Icon only */
 .sidebar.collapsed .new-chat-button {
     width: 40px;
     height: 40px;
@@ -115,24 +104,25 @@
     justify-content: center;
     border-radius: 50%;
 }
-.sidebar.collapsed .new-chat-button .new-chat-text,
-.sidebar.collapsed .new-chat-button .fullscreen-icon {
+.sidebar.collapsed .new-chat-button .new-chat-text {
     display: none;
 }
 .sidebar.collapsed .new-chat-button .icon {
     margin-right: 0;
 }
+.sidebar.collapsed .new-chat-button .fullscreen-icon {
+    display: none;
+}
 
-
-/* Search Bar Styling */
+/* Search Bar Styling (Minimal changes, relies on structure) */
 .sidebar-search {
     display: flex;
     align-items: center;
-    background-color: rgba(255, 255, 255, 0.08);
+    background-color: rgba(255, 255, 255, 0.05);
     border-radius: 10px;
-    padding: 10px 12px;
-    margin-bottom: 25px;
-    border: none; /* Removed redundant border */
+    padding: 8px 10px;
+    margin-bottom: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .sidebar-search .search-icon {
@@ -147,7 +137,8 @@
     border: none;
     color: var(--color-text-light);
     outline: none;
-    font-size: 1rem;
+    padding: 2px 0;
+    font-size: 0.95rem;
 }
 .search-input::placeholder {
     color: #aaa;
@@ -155,73 +146,57 @@
 
 /* Sidebar Middle/Recent Section */
 .recent-chats-section {
-    flex-grow: 1;
-    overflow-y: auto;
-    padding-right: 5px;
-}
-
-/* Custom Scrollbar */
-.recent-chats-section::-webkit-scrollbar {
-    width: 8px;
-}
-.recent-chats-section::-webkit-scrollbar-thumb {
-    background-color: rgba(138, 180, 248, 0.25);
-    border-radius: 10px;
-}
-.recent-chats-section::-webkit-scrollbar-track {
-    background-color: transparent;
+    flex-grow: 1; 
+    overflow-y: auto; 
+    padding-right: 5px; 
 }
 
 .sidebar-section h3 {
-    font-size: 0.8rem; /* Smaller heading for structure */
+    font-size: 0.9rem;
     color: #aaa;
-    margin-top: 5px;
+    margin-top: 15px;
     margin-bottom: 10px;
     padding-left: 5px;
     text-transform: uppercase;
-    letter-spacing: 1.5px;
+    letter-spacing: 1px;
     font-weight: 500;
 }
 
 .sidebar-item {
-    position: relative;
+    position: relative; 
     display: flex;
     align-items: center;
-    padding: 12px 10px; /* Increased vertical padding */
-    margin-bottom: 6px; /* Increased spacing between items */
+    padding: 10px 10px;
+    margin-bottom: 5px;
     border-radius: 10px;
     cursor: pointer;
     font-size: 0.95rem;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    transition: background-color 0.2s;
+    transition: all 0.2s;
     line-height: 1.2;
 }
 
 .sidebar-item:hover:not(.selected-chat) {
-    background-color: var(--color-hover-bg);
+    background-color: rgba(255, 255, 255, 0.08);
+    transform: translateX(2px);
 }
 
 .item-icon {
-    font-size: 1rem;
-    margin-right: 10px;
+    font-size: 0.9rem;
+    margin-right: 8px;
     color: var(--color-primary);
 }
 
-.item-title {
-    flex: 1;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-/* Selected State - Subtle and clean */
+/* Selected State (The star of the show) */
 .selected-chat {
-    background-color: var(--color-selected-bg);
+    background-color: rgba(138, 180, 248, 0.15);
     color: var(--color-primary);
     font-weight: 600;
-    border-left: 3px solid var(--color-primary);
-    padding-left: 7px;
+    /* Subtle inner glow for selected item */
+    box-shadow: 0 0 8px rgba(138, 180, 248, 0.2) inset; 
+    border: 1px solid rgba(138, 180, 248, 0.2);
 }
 
 /* Chat Actions (Edit/Delete) */
@@ -232,32 +207,32 @@
     transform: translateY(-50%);
     display: flex;
     gap: 5px;
-    background-color: var(--color-bg-sidebar);
-    padding-left: 15px;
-    opacity: 0;
+    background-color: rgba(15, 15, 30, 0.9);
+    padding-left: 10px;
+    opacity: 0; 
     transition: opacity 0.2s;
 }
 
 .sidebar-item:hover .chat-actions,
 .selected-chat .chat-actions {
-    opacity: 1;
+    opacity: 1; 
 }
 
 .action-icon {
-    font-size: 0.85rem;
+    font-size: 0.8rem;
     cursor: pointer;
-    padding: 5px;
+    padding: 4px;
     border-radius: 6px;
-    color: #ccc;
+    color: #aaa;
 }
 
 .action-icon:hover {
-    background-color: rgba(255, 255, 255, 0.2);
+    background-color: rgba(255, 255, 255, 0.1);
     color: var(--color-text-light);
 }
 
 .delete-icon:hover {
-    color: var(--color-error);
+    color: var(--color-error); 
 }
 
 .no-results {
@@ -270,20 +245,14 @@
 /* Sidebar Bottom Section (Settings/Profile) */
 .sidebar-bottom {
     margin-top: auto;
-    padding-top: 20px;
-    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    padding-top: 15px;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
     width: 100%;
 }
 
 .sidebar-bottom .sidebar-item {
     color: #ccc;
     justify-content: flex-start;
-    padding: 10px 10px;
-}
-
-.sidebar-bottom .sidebar-item .icon {
-    font-size: 1.1rem;
-    margin-right: 10px;
 }
 
 /* Collapsed Sidebar Bottom Item */
@@ -297,7 +266,6 @@
     font-size: 1.5rem;
 }
 
-.sidebar.collapsed .sidebar-bottom .item-title,
-.sidebar.collapsed .item-title {
+.sidebar.collapsed .sidebar-bottom .item-title {
     display: none;
 }
