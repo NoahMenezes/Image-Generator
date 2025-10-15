@@ -1,14 +1,22 @@
 :root {
     --color-primary: #8ab4f8; 
+    --color-primary-light: #a8c7fa;
     --color-text-light: #e8eaed;
+    --color-text-muted: #b0b3b8;
     --color-bg-dark: #0a0a19;
     --color-bg-medium: #1e1e32;
     --color-shadow-light: rgba(138, 180, 248, 0.4);
     --color-shadow-medium: rgba(138, 180, 248, 0.15);
+    --color-shadow-glow: rgba(138, 180, 248, 0.6);
+    --color-error: #f44336;
     
     /* UPDATED: Sidebar width increased to 350px */
     --sidebar-open-width: 350px; 
     --sidebar-closed-width: 60px;
+    
+    /* Transitions */
+    --transition-fast: 0.2s ease;
+    --transition-medium: 0.3s ease;
 }
 
 .sidebar {
@@ -18,16 +26,20 @@
     position: fixed;
     top: 0;
     left: 0;
-    /* Deeper, more saturated background */
-    background-color: rgba(15, 15, 30, 0.95); 
+    /* Enhanced gradient background with glassmorphism */
+    background: linear-gradient(180deg, rgba(15, 15, 35, 0.98) 0%, rgba(10, 10, 25, 0.95) 100%);
+    backdrop-filter: blur(20px) saturate(150%);
     color: var(--color-text-light);
     padding: 20px 15px;
     display: flex;
     flex-direction: column;
     z-index: 20;
-    /* Added subtle vertical glow for separation */
-    box-shadow: 4px 0 15px rgba(0, 0, 0, 0.6), 1px 0 0 0 rgba(138, 180, 248, 0.1);
-    transition: width 0.3s ease, padding 0.3s ease; 
+    /* Enhanced shadow with glow effect */
+    box-shadow: 
+        4px 0 30px rgba(0, 0, 0, 0.8), 
+        2px 0 10px rgba(138, 180, 248, 0.15),
+        inset -1px 0 0 0 rgba(138, 180, 248, 0.1);
+    transition: width var(--transition-medium), padding var(--transition-medium); 
     overflow-y: hidden;
 }
 
@@ -53,40 +65,51 @@
 .icon {
     font-size: 1.5rem;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all var(--transition-fast);
     color: var(--color-text-light);
-    padding: 5px;
-    border-radius: 8px;
+    padding: 8px;
+    border-radius: 10px;
 }
 
 .icon:hover {
-    background-color: rgba(255, 255, 255, 0.1);
+    background-color: rgba(138, 180, 248, 0.15);
+    color: var(--color-primary-light);
+    transform: scale(1.05);
+    box-shadow: 0 0 15px rgba(138, 180, 248, 0.2);
 }
 
 .sidebar.collapsed .icon {
     font-size: 1.2rem;
 }
 
-/* New Chat Button (Enhanced with gradient/glow) */
+/* New Chat Button (Enhanced with gradient/glow and animation) */
 .new-chat-button {
-    background: linear-gradient(90deg, rgba(138, 180, 248, 0.2), rgba(138, 180, 248, 0.1));
+    background: linear-gradient(135deg, rgba(138, 180, 248, 0.25), rgba(138, 180, 248, 0.15));
     color: var(--color-primary);
-    padding: 10px 15px;
-    border-radius: 12px;
+    padding: 14px 18px;
+    border-radius: 14px;
     cursor: pointer;
     display: flex;
     justify-content: space-between;
     align-items: center;
     font-weight: 600;
-    transition: all 0.3s ease;
+    transition: all var(--transition-medium);
     width: 100%;
-    box-shadow: 0 0 5px rgba(138, 180, 248, 0.3);
+    box-shadow: 0 4px 15px rgba(138, 180, 248, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(138, 180, 248, 0.2);
+    font-family: 'Poppins', sans-serif;
+    letter-spacing: 0.5px;
 }
 
 .new-chat-button:hover {
-    background: linear-gradient(90deg, rgba(138, 180, 248, 0.3), rgba(138, 180, 248, 0.2));
-    box-shadow: 0 0 15px var(--color-shadow-light);
-    transform: translateY(-1px);
+    background: linear-gradient(135deg, rgba(138, 180, 248, 0.35), rgba(138, 180, 248, 0.25));
+    box-shadow: 0 6px 25px var(--color-shadow-light), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+    transform: translateY(-2px) scale(1.01);
+    border-color: rgba(138, 180, 248, 0.4);
+}
+
+.new-chat-button:active {
+    transform: translateY(0) scale(0.99);
 }
 
 .new-chat-button .icon {
@@ -114,15 +137,23 @@
     display: none;
 }
 
-/* Search Bar Styling (Minimal changes, relies on structure) */
+/* Search Bar Styling (Enhanced with glassmorphism) */
 .sidebar-search {
     display: flex;
     align-items: center;
-    background-color: rgba(255, 255, 255, 0.05);
-    border-radius: 10px;
-    padding: 8px 10px;
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.04));
+    backdrop-filter: blur(10px);
+    border-radius: 12px;
+    padding: 10px 14px;
     margin-bottom: 20px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    transition: all var(--transition-fast);
+}
+
+.sidebar-search:focus-within {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.06));
+    border-color: rgba(138, 180, 248, 0.3);
+    box-shadow: 0 0 15px rgba(138, 180, 248, 0.2);
 }
 
 .sidebar-search .search-icon {
@@ -152,51 +183,96 @@
 }
 
 .sidebar-section h3 {
-    font-size: 0.9rem;
-    color: #aaa;
+    font-size: 0.85rem;
+    color: var(--color-text-muted);
     margin-top: 15px;
-    margin-bottom: 10px;
-    padding-left: 5px;
+    margin-bottom: 12px;
+    padding-left: 8px;
     text-transform: uppercase;
-    letter-spacing: 1px;
-    font-weight: 500;
+    letter-spacing: 1.5px;
+    font-weight: 600;
+    font-family: 'Poppins', sans-serif;
+    position: relative;
+}
+
+.sidebar-section h3::after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -5px;
+    width: 30px;
+    height: 2px;
+    background: linear-gradient(90deg, var(--color-primary), transparent);
+    border-radius: 2px;
 }
 
 .sidebar-item {
     position: relative; 
     display: flex;
     align-items: center;
-    padding: 10px 10px;
-    margin-bottom: 5px;
-    border-radius: 10px;
+    padding: 12px 14px;
+    margin-bottom: 6px;
+    border-radius: 12px;
     cursor: pointer;
     font-size: 0.95rem;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    transition: all 0.2s;
-    line-height: 1.2;
+    transition: all var(--transition-fast);
+    line-height: 1.3;
+    border: 1px solid transparent;
 }
 
 .sidebar-item:hover:not(.selected-chat) {
-    background-color: rgba(255, 255, 255, 0.08);
-    transform: translateX(2px);
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+    transform: translateX(4px);
+    border-color: rgba(138, 180, 248, 0.15);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 .item-icon {
-    font-size: 0.9rem;
-    margin-right: 8px;
+    font-size: 1rem;
+    margin-right: 10px;
     color: var(--color-primary);
+    transition: transform var(--transition-fast);
+}
+
+.sidebar-item:hover .item-icon {
+    transform: scale(1.15) rotate(5deg);
+}
+
+.item-title {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 /* Selected State (The star of the show) */
 .selected-chat {
-    background-color: rgba(138, 180, 248, 0.15);
-    color: var(--color-primary);
+    background: linear-gradient(135deg, rgba(138, 180, 248, 0.2), rgba(138, 180, 248, 0.12));
+    color: var(--color-primary-light);
     font-weight: 600;
-    /* Subtle inner glow for selected item */
-    box-shadow: 0 0 8px rgba(138, 180, 248, 0.2) inset; 
-    border: 1px solid rgba(138, 180, 248, 0.2);
+    /* Enhanced glow for selected item */
+    box-shadow: 
+        0 0 20px rgba(138, 180, 248, 0.3) inset,
+        0 4px 15px rgba(0, 0, 0, 0.4),
+        0 0 10px rgba(138, 180, 248, 0.2);
+    border: 1px solid rgba(138, 180, 248, 0.4);
+    transform: translateX(4px);
+}
+
+.selected-chat::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 4px;
+    height: 60%;
+    background: linear-gradient(180deg, var(--color-primary), var(--color-primary-light));
+    border-radius: 0 4px 4px 0;
+    box-shadow: 0 0 10px var(--color-primary);
 }
 
 /* Chat Actions (Edit/Delete) */
@@ -219,40 +295,63 @@
 }
 
 .action-icon {
-    font-size: 0.8rem;
+    font-size: 0.85rem;
     cursor: pointer;
-    padding: 4px;
-    border-radius: 6px;
-    color: #aaa;
+    padding: 6px;
+    border-radius: 8px;
+    color: var(--color-text-muted);
+    transition: all var(--transition-fast);
 }
 
 .action-icon:hover {
-    background-color: rgba(255, 255, 255, 0.1);
+    background-color: rgba(255, 255, 255, 0.15);
     color: var(--color-text-light);
+    transform: scale(1.15);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
 }
 
 .delete-icon:hover {
-    color: var(--color-error); 
+    background-color: rgba(244, 67, 54, 0.2);
+    color: var(--color-error);
+    box-shadow: 0 0 10px rgba(244, 67, 54, 0.3);
 }
 
 .no-results {
-    padding: 10px 10px;
-    color: #aaa;
+    padding: 20px 14px;
+    color: var(--color-text-muted);
     font-style: italic;
     font-size: 0.9rem;
+    text-align: center;
+    opacity: 0.7;
 }
 
 /* Sidebar Bottom Section (Settings/Profile) */
 .sidebar-bottom {
     margin-top: auto;
     padding-top: 15px;
-    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
     width: 100%;
+    position: relative;
+}
+
+.sidebar-bottom::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(138, 180, 248, 0.3), transparent);
 }
 
 .sidebar-bottom .sidebar-item {
-    color: #ccc;
+    color: var(--color-text-muted);
     justify-content: flex-start;
+    font-size: 0.9rem;
+}
+
+.sidebar-bottom .sidebar-item:hover {
+    color: var(--color-text-light);
 }
 
 /* Collapsed Sidebar Bottom Item */
@@ -267,5 +366,9 @@
 }
 
 .sidebar.collapsed .sidebar-bottom .item-title {
+    display: none;
+}
+
+.sidebar.collapsed .item-title {
     display: none;
 }

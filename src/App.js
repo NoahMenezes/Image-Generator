@@ -2,7 +2,7 @@ import React, { useRef, useEffect, useState, useCallback, useContext } from 'rea
 import './App.css';
 import Sidebar, { SidebarProvider, SidebarContext } from './components/Sidebar';
 import SearchBar from './components/SearchBar';
-import { generateImageResponse } from './config/Gemini';
+import { generateImageResponse } from './config/ImagineAPI';
 
 // --- CONFIGURATION ---
 const MAX_STAR_COUNT = 1200;

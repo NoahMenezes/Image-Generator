@@ -100,8 +100,10 @@ const Sidebar = () => {
     };
 
     // NOTE: Using custom modal UI instead of window.confirm/prompt (best practice for iframes)
+    // NOTE: Using custom modal UI instead of window.confirm/prompt (best practice for iframes)
     const handleDelete = (id) => {
-        if (window.confirm('Are you sure you want to delete this chat?')) {
+        // Removed window.confirm() - Deleting immediately upon click
+        // if (window.confirm('Are you sure you want to delete this chat?')) { 
             setRecentChats(prevChats => {
                 const updatedChats = prevChats.filter(chat => chat.id !== id);
                 if (currentChatId === id) {
@@ -109,7 +111,7 @@ const Sidebar = () => {
                 }
                 return updatedChats;
             });
-        }
+        // }
     };
 
     const handleEdit = (id) => {

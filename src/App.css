@@ -2,34 +2,48 @@
 /* --- GLOBAL THEME --- */
 /* -------------------- */
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Poppins:wght@300;400;500;600;700&display=swap');
 
 :root {
-    /* Colors */
+    /* Colors - Enhanced Palette */
     --color-primary: #8ab4f8; /* Gemini Blue */
+    --color-primary-light: #a8c7fa;
+    --color-primary-dark: #6b9ae8;
     --color-secondary: #9cdcfe; /* User Blue */
+    --color-accent: #bb86fc; /* Purple accent */
+    --color-accent-warm: #ffa726; /* Warm orange */
     --color-text-light: #e8eaed;
+    --color-text-muted: #b0b3b8;
     --color-bg-dark: #0a0a19;
     --color-bg-medium: #1e1e32;
+    --color-bg-card: rgba(30, 30, 50, 0.85);
     --color-error: #f44336;
+    --color-success: #4caf50;
     --color-shadow-light: rgba(138, 180, 248, 0.4);
     --color-shadow-medium: rgba(138, 180, 248, 0.15);
+    --color-shadow-glow: rgba(138, 180, 248, 0.6);
     
     /* Layout */
     --sidebar-open-width: 280px;
     --sidebar-closed-width: 60px;
+    
+    /* Transitions */
+    --transition-fast: 0.2s ease;
+    --transition-medium: 0.3s ease;
+    --transition-slow: 0.5s ease;
 }
 
 body, html, #root { 
     margin: 0;
     padding: 0;
     overflow-x: hidden;
-    background-color: var(--color-bg-dark);
-    font-family: 'Inter', sans-serif;
+    background: radial-gradient(ellipse at top, rgba(138, 180, 248, 0.08) 0%, var(--color-bg-dark) 50%);
+    font-family: 'Inter', 'Poppins', sans-serif;
     height: 100%;
     width: 100%;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    scroll-behavior: smooth;
 }
 
 /* Container for the entire application (Controls dynamic width for main content) */
@@ -42,10 +56,13 @@ body, html, #root {
     --sidebar-width: var(--sidebar-current-width, var(--sidebar-open-width)); 
 }
  
-/* Canvas Styles (Subtle background gradient added) */
+/* Canvas Styles (Enhanced gradient with multiple layers) */
 .starfield-canvas {
     display: block;
-    background: linear-gradient(180deg, rgba(0,0,0,1) 0%, var(--color-bg-dark) 100%);
+    background: 
+        radial-gradient(ellipse at 20% 30%, rgba(138, 180, 248, 0.05) 0%, transparent 50%),
+        radial-gradient(ellipse at 80% 70%, rgba(187, 134, 252, 0.05) 0%, transparent 50%),
+        linear-gradient(180deg, rgba(0,0,0,1) 0%, var(--color-bg-dark) 100%);
     position: absolute;
     top: 0;
     left: 0;
@@ -66,7 +83,7 @@ body, html, #root {
     align-items: center;
     padding: 0 20px;
     box-sizing: border-box;
-    transition: left 0.3s ease; /* Smooth transition when sidebar opens/closes */
+    transition: left var(--transition-medium); /* Smooth transition when sidebar opens/closes */
 }
 
 /* Area that scrolls (Chat History) */
@@ -104,14 +121,25 @@ body, html, #root {
     padding: 0;
 }
 
-
-/* Info Text Styles for Centered Greeting (Enhanced with neon glow) */
+/* Info Text Styles for Centered Greeting (Enhanced with neon glow and animation) */
 .info-text {
     position: relative; 
     width: 100%; 
     max-width: 800px; 
     text-align: center;
-    margin-bottom: 250px; 
+    margin-bottom: 250px;
+    animation: fadeInUp 0.8s ease-out;
+} 
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
  
 .greeting-hello {
@@ -119,7 +147,19 @@ body, html, #root {
     font-weight: 300;
     margin: 0 0 8px 0;
     color: var(--color-primary); 
-    text-shadow: 0 0 15px var(--color-shadow-light); /* Stronger glow */
+    text-shadow: 0 0 20px var(--color-shadow-light), 0 0 40px var(--color-shadow-medium);
+    font-family: 'Poppins', sans-serif;
+    letter-spacing: 1px;
+    animation: pulseGlow 3s ease-in-out infinite;
+} 
+
+@keyframes pulseGlow {
+    0%, 100% {
+        text-shadow: 0 0 20px var(--color-shadow-light), 0 0 40px var(--color-shadow-medium);
+    }
+    50% {
+        text-shadow: 0 0 30px var(--color-shadow-glow), 0 0 60px var(--color-shadow-light);
+    }
 }
  
 .greeting-question {
@@ -128,38 +168,79 @@ body, html, #root {
     margin: 0;
     color: var(--color-text-light);
     line-height: 1.2;
-    background: linear-gradient(90deg, #b0c4de, #ffffff, #b0c4de);
+    background: linear-gradient(120deg, #8ab4f8, #bb86fc, #ffa726, #8ab4f8);
+    background-size: 200% auto;
+    background-clip: text;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    text-shadow: 0 0 5px rgba(255, 255, 255, 0.5); /* Subtle white glow */
+    font-family: 'Poppins', sans-serif;
+    animation: gradientShift 4s ease infinite;
 }
 
-/* --- CHAT MESSAGE STYLES (Sleek, Layered Design) --- */
+@keyframes gradientShift {
+    0%, 100% {
+        background-position: 0% center;
+    }
+    50% {
+        background-position: 100% center;
+    }
+}
+
+/* --- CHAT MESSAGE STYLES (Sleek, Layered Design with Glassmorphism) --- */
 .chat-message {
     width: 100%;
     max-width: 800px;
-    padding: 20px;
+    padding: 24px;
     margin-bottom: 25px;
-    border-radius: 16px; /* Slightly larger radius */
+    border-radius: 20px;
     text-align: left;
-    backdrop-filter: blur(5px); /* Add a subtle blur effect */
-    border: 1px solid rgba(255, 255, 255, 0.05);
-    line-height: 1.6;
-    transition: all 0.3s ease;
+    backdrop-filter: blur(12px) saturate(180%);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    line-height: 1.7;
+    transition: all var(--transition-medium);
+    animation: slideIn 0.4s ease-out;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.chat-message:hover {
+    transform: translateY(-2px);
+    border-color: rgba(255, 255, 255, 0.12);
 }
 
 .message-header {
     font-weight: 700;
     margin-bottom: 15px;
-    font-size: 1.2rem;
-    letter-spacing: 0.5px;
+    font-size: 1.1rem;
+    letter-spacing: 1px;
     text-transform: uppercase;
+    font-family: 'Poppins', sans-serif;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.message-header::before {
+    content: '';
+    width: 4px;
+    height: 20px;
+    border-radius: 2px;
+    background: currentColor;
 }
 
 .user-message {
-    background-color: rgba(30, 30, 30, 0.8);
+    background: linear-gradient(135deg, rgba(30, 30, 50, 0.9), rgba(30, 30, 40, 0.85));
     color: var(--color-text-light);
-    box-shadow: 0 6px 15px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6), 0 2px 8px rgba(156, 220, 254, 0.1);
 }
 
 .user-message .message-header {
@@ -167,9 +248,10 @@ body, html, #root {
 }
 
 .model-message {
-    background-color: var(--color-bg-medium); 
+    background: linear-gradient(135deg, rgba(30, 30, 50, 0.95), rgba(40, 40, 60, 0.9));
     color: var(--color-text-light);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6), 0 0 5px var(--color-shadow-medium) inset;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7), 0 0 20px var(--color-shadow-medium) inset, 0 2px 10px rgba(138, 180, 248, 0.15);
+    border-left: 3px solid var(--color-primary);
 }
 
 .model-message .message-header {
@@ -177,30 +259,60 @@ body, html, #root {
 }
 
 .error-text {
-    background-color: rgba(255, 0, 0, 0.1);
+    background: linear-gradient(135deg, rgba(244, 67, 54, 0.15), rgba(255, 0, 0, 0.08));
     color: var(--color-error);
-    border: 1px solid var(--color-error);
-    box-shadow: 0 0 15px rgba(244, 67, 54, 0.5);
+    border: 1px solid rgba(244, 67, 54, 0.5);
+    box-shadow: 0 0 20px rgba(244, 67, 54, 0.4), 0 4px 15px rgba(0, 0, 0, 0.5);
+    animation: shake 0.5s ease;
 }
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+
 .error-text .message-header {
     color: var(--color-error);
 }
 
-/* Style for the generated image */
+/* Style for the generated image (Enhanced with premium effects) */
 .generated-image {
     width: auto;
     max-width: 100%;
     height: auto;
     max-height: 600px;
-    border-radius: 12px;
-    /* Stronger, more distinct glow for the generated image */
-    box-shadow: 0 0 25px var(--color-shadow-light), 0 0 5px var(--color-primary);
-    transition: transform 0.3s ease;
+    border-radius: 16px;
+    box-shadow: 
+        0 0 40px var(--color-shadow-light), 
+        0 0 80px var(--color-shadow-medium),
+        0 10px 30px rgba(0, 0, 0, 0.5);
+    transition: all var(--transition-medium);
     cursor: zoom-in;
+    border: 2px solid rgba(138, 180, 248, 0.2);
+    animation: imageReveal 0.6s ease-out;
+}
+
+@keyframes imageReveal {
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+        filter: blur(10px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+        filter: blur(0);
+    }
 }
 
 .generated-image:hover {
-    transform: scale(1.01);
+    transform: scale(1.02) translateY(-4px);
+    box-shadow: 
+        0 0 60px var(--color-shadow-glow), 
+        0 0 100px var(--color-shadow-light),
+        0 15px 40px rgba(0, 0, 0, 0.6);
+    border-color: rgba(138, 180, 248, 0.4);
 }
 
 /* --- END CHAT MESSAGE STYLES --- */
@@ -209,14 +321,29 @@ body, html, #root {
 .loading-indicator {
     color: var(--color-primary);
     font-size: 1.2rem;
-    font-weight: 500;
+    font-weight: 600;
     margin-bottom: 20px;
     position: absolute;
     bottom: 100px; 
-    padding: 10px 20px;
-    border-radius: 25px;
-    background-color: rgba(30, 30, 50, 0.9);
-    box-shadow: 0 0 15px var(--color-shadow-light);
+    padding: 14px 28px;
+    border-radius: 30px;
+    background: linear-gradient(135deg, rgba(30, 30, 50, 0.95), rgba(40, 40, 60, 0.9));
+    backdrop-filter: blur(10px);
+    box-shadow: 0 0 25px var(--color-shadow-light), 0 4px 15px rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(138, 180, 248, 0.3);
+    font-family: 'Poppins', sans-serif;
+    animation: pulse 2s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.02);
+        opacity: 0.9;
+    }
 }
 
 /* Search Bar Positioning (FIXED) */
