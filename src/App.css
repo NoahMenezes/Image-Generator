@@ -2,7 +2,7 @@
 /* --- GLOBAL THEME --- */
 /* -------------------- */
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Poppins:wght@300;400;500;600;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@100..900&family=Poppins:wght@300;400;500;600;700&display=swap");
 
 :root {
     /* Colors - Enhanced Palette */
@@ -22,23 +22,29 @@
     --color-shadow-light: rgba(138, 180, 248, 0.4);
     --color-shadow-medium: rgba(138, 180, 248, 0.15);
     --color-shadow-glow: rgba(138, 180, 248, 0.6);
-    
+
     /* Layout */
-    --sidebar-open-width: 280px;
+    --sidebar-open-width: 350px;
     --sidebar-closed-width: 60px;
-    
+
     /* Transitions */
     --transition-fast: 0.2s ease;
     --transition-medium: 0.3s ease;
     --transition-slow: 0.5s ease;
 }
 
-body, html, #root { 
+body,
+html,
+#root {
     margin: 0;
     padding: 0;
     overflow-x: hidden;
-    background: radial-gradient(ellipse at top, rgba(138, 180, 248, 0.08) 0%, var(--color-bg-dark) 50%);
-    font-family: 'Inter', 'Poppins', sans-serif;
+    background: radial-gradient(
+        ellipse at top,
+        rgba(138, 180, 248, 0.08) 0%,
+        var(--color-bg-dark) 50%
+    );
+    font-family: "Inter", "Poppins", sans-serif;
     height: 100%;
     width: 100%;
     -webkit-font-smoothing: antialiased;
@@ -53,27 +59,35 @@ body, html, #root {
     height: 100vh;
     overflow: hidden;
     /* This variable is set dynamically in App.js based on sidebar state */
-    --sidebar-width: var(--sidebar-current-width, var(--sidebar-open-width)); 
+    --sidebar-width: var(--sidebar-current-width, var(--sidebar-open-width));
 }
- 
+
 /* Canvas Styles (Enhanced gradient with multiple layers) */
 .starfield-canvas {
     display: block;
-    background: 
-        radial-gradient(ellipse at 20% 30%, rgba(138, 180, 248, 0.05) 0%, transparent 50%),
-        radial-gradient(ellipse at 80% 70%, rgba(187, 134, 252, 0.05) 0%, transparent 50%),
-        linear-gradient(180deg, rgba(0,0,0,1) 0%, var(--color-bg-dark) 100%);
+    background:
+        radial-gradient(
+            ellipse at 20% 30%,
+            rgba(138, 180, 248, 0.05) 0%,
+            transparent 50%
+        ),
+        radial-gradient(
+            ellipse at 80% 70%,
+            rgba(187, 134, 252, 0.05) 0%,
+            transparent 50%
+        ),
+        linear-gradient(180deg, rgba(0, 0, 0, 1) 0%, var(--color-bg-dark) 100%);
     position: absolute;
     top: 0;
     left: 0;
     z-index: 1;
 }
- 
+
 /* Wrapper for all main content (Chat History + Fixed SearchBar) */
 .main-content-overlay {
     position: absolute;
     /* Use the dynamic width variable */
-    left: var(--sidebar-width); 
+    left: var(--sidebar-width);
     right: 0;
     top: 0;
     bottom: 0;
@@ -88,10 +102,10 @@ body, html, #root {
 
 /* Area that scrolls (Chat History) */
 .content-scroll-area {
-    flex-grow: 1; 
+    flex-grow: 1;
     width: 100%;
     padding: 50px 0 100px 0; /* Ensures last message clears the fixed search bar */
-    overflow-y: auto; 
+    overflow-y: auto;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -116,20 +130,20 @@ body, html, #root {
 }
 
 .main-content-overlay.initial-mode .content-scroll-area {
-    flex-grow: 0; 
+    flex-grow: 0;
     overflow-y: hidden;
     padding: 0;
 }
 
 /* Info Text Styles for Centered Greeting (Enhanced with neon glow and animation) */
 .info-text {
-    position: relative; 
-    width: 100%; 
-    max-width: 800px; 
+    position: relative;
+    width: 100%;
+    max-width: 800px;
     text-align: center;
     margin-bottom: 250px;
     animation: fadeInUp 0.8s ease-out;
-} 
+}
 
 @keyframes fadeInUp {
     from {
@@ -141,27 +155,34 @@ body, html, #root {
         transform: translateY(0);
     }
 }
- 
+
 .greeting-hello {
     font-size: 3rem;
     font-weight: 300;
     margin: 0 0 8px 0;
-    color: var(--color-primary); 
-    text-shadow: 0 0 20px var(--color-shadow-light), 0 0 40px var(--color-shadow-medium);
-    font-family: 'Poppins', sans-serif;
+    color: var(--color-primary);
+    text-shadow:
+        0 0 20px var(--color-shadow-light),
+        0 0 40px var(--color-shadow-medium);
+    font-family: "Poppins", sans-serif;
     letter-spacing: 1px;
     animation: pulseGlow 3s ease-in-out infinite;
-} 
+}
 
 @keyframes pulseGlow {
-    0%, 100% {
-        text-shadow: 0 0 20px var(--color-shadow-light), 0 0 40px var(--color-shadow-medium);
+    0%,
+    100% {
+        text-shadow:
+            0 0 20px var(--color-shadow-light),
+            0 0 40px var(--color-shadow-medium);
     }
     50% {
-        text-shadow: 0 0 30px var(--color-shadow-glow), 0 0 60px var(--color-shadow-light);
+        text-shadow:
+            0 0 30px var(--color-shadow-glow),
+            0 0 60px var(--color-shadow-light);
     }
 }
- 
+
 .greeting-question {
     font-size: 4rem;
     font-weight: 700;
@@ -173,12 +194,13 @@ body, html, #root {
     background-clip: text;
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-    font-family: 'Poppins', sans-serif;
+    font-family: "Poppins", sans-serif;
     animation: gradientShift 4s ease infinite;
 }
 
 @keyframes gradientShift {
-    0%, 100% {
+    0%,
+    100% {
         background-position: 0% center;
     }
     50% {
@@ -223,53 +245,105 @@ body, html, #root {
     font-size: 1.1rem;
     letter-spacing: 1px;
     text-transform: uppercase;
-    font-family: 'Poppins', sans-serif;
+    font-family: "Poppins", sans-serif;
     display: flex;
     align-items: center;
     gap: 8px;
 }
 
 .message-header::before {
-    content: '';
+    content: "";
     width: 4px;
     height: 20px;
     border-radius: 2px;
     background: currentColor;
 }
 
-.user-message {
-    background: linear-gradient(135deg, rgba(30, 30, 50, 0.9), rgba(30, 30, 40, 0.85));
+.message-content {
+    font-size: 1rem;
+    line-height: 1.8;
+}
+
+.message-content p {
+    margin: 0;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+/* Text Response Styles */
+.text-response {
+    font-size: 1.05rem;
+    line-height: 1.8;
     color: var(--color-text-light);
-    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.6), 0 2px 8px rgba(156, 220, 254, 0.1);
+}
+
+.text-response p {
+    margin: 0;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+}
+
+.user-message {
+    background: linear-gradient(
+        135deg,
+        rgba(30, 30, 50, 0.9),
+        rgba(30, 30, 40, 0.85)
+    );
+    color: var(--color-text-light);
+    box-shadow:
+        0 8px 20px rgba(0, 0, 0, 0.6),
+        0 2px 8px rgba(156, 220, 254, 0.1);
 }
 
 .user-message .message-header {
-    color: var(--color-secondary); 
+    color: var(--color-secondary);
 }
 
+.text-message,
 .model-message {
-    background: linear-gradient(135deg, rgba(30, 30, 50, 0.95), rgba(40, 40, 60, 0.9));
+    background: linear-gradient(
+        135deg,
+        rgba(30, 30, 50, 0.95),
+        rgba(40, 40, 60, 0.9)
+    );
     color: var(--color-text-light);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.7), 0 0 20px var(--color-shadow-medium) inset, 0 2px 10px rgba(138, 180, 248, 0.15);
+    box-shadow:
+        0 8px 24px rgba(0, 0, 0, 0.7),
+        0 0 20px var(--color-shadow-medium) inset,
+        0 2px 10px rgba(138, 180, 248, 0.15);
     border-left: 3px solid var(--color-primary);
 }
 
+.text-message .message-header,
 .model-message .message-header {
-    color: var(--color-primary); 
+    color: var(--color-primary);
 }
 
 .error-text {
-    background: linear-gradient(135deg, rgba(244, 67, 54, 0.15), rgba(255, 0, 0, 0.08));
+    background: linear-gradient(
+        135deg,
+        rgba(244, 67, 54, 0.15),
+        rgba(255, 0, 0, 0.08)
+    );
     color: var(--color-error);
     border: 1px solid rgba(244, 67, 54, 0.5);
-    box-shadow: 0 0 20px rgba(244, 67, 54, 0.4), 0 4px 15px rgba(0, 0, 0, 0.5);
+    box-shadow:
+        0 0 20px rgba(244, 67, 54, 0.4),
+        0 4px 15px rgba(0, 0, 0, 0.5);
     animation: shake 0.5s ease;
 }
 
 @keyframes shake {
-    0%, 100% { transform: translateX(0); }
-    25% { transform: translateX(-5px); }
-    75% { transform: translateX(5px); }
+    0%,
+    100% {
+        transform: translateX(0);
+    }
+    25% {
+        transform: translateX(-5px);
+    }
+    75% {
+        transform: translateX(5px);
+    }
 }
 
 .error-text .message-header {
@@ -278,13 +352,14 @@ body, html, #root {
 
 /* Style for the generated image (Enhanced with premium effects) */
 .generated-image {
-    width: auto;
+    /* FIX: The image must scale to the width of the container but keep its aspect ratio */
+    width: 100%;
     max-width: 100%;
-    height: auto;
-    max-height: 600px;
+    height: auto; /* THIS IS THE KEY FIX: Ensures the image height adjusts automatically */
+    /* Removed the restrictive 'max-height: 600px;' that was causing the cropping. */
     border-radius: 16px;
-    box-shadow: 
-        0 0 40px var(--color-shadow-light), 
+    box-shadow:
+        0 0 40px var(--color-shadow-light),
         0 0 80px var(--color-shadow-medium),
         0 10px 30px rgba(0, 0, 0, 0.5);
     transition: all var(--transition-medium);
@@ -308,8 +383,8 @@ body, html, #root {
 
 .generated-image:hover {
     transform: scale(1.02) translateY(-4px);
-    box-shadow: 
-        0 0 60px var(--color-shadow-glow), 
+    box-shadow:
+        0 0 60px var(--color-shadow-glow),
         0 0 100px var(--color-shadow-light),
         0 15px 40px rgba(0, 0, 0, 0.6);
     border-color: rgba(138, 180, 248, 0.4);
@@ -317,26 +392,32 @@ body, html, #root {
 
 /* --- END CHAT MESSAGE STYLES --- */
 
-
 .loading-indicator {
     color: var(--color-primary);
     font-size: 1.2rem;
     font-weight: 600;
     margin-bottom: 20px;
     position: absolute;
-    bottom: 100px; 
+    bottom: 100px;
     padding: 14px 28px;
     border-radius: 30px;
-    background: linear-gradient(135deg, rgba(30, 30, 50, 0.95), rgba(40, 40, 60, 0.9));
+    background: linear-gradient(
+        135deg,
+        rgba(30, 30, 50, 0.95),
+        rgba(40, 40, 60, 0.9)
+    );
     backdrop-filter: blur(10px);
-    box-shadow: 0 0 25px var(--color-shadow-light), 0 4px 15px rgba(0, 0, 0, 0.5);
+    box-shadow:
+        0 0 25px var(--color-shadow-light),
+        0 4px 15px rgba(0, 0, 0, 0.5);
     border: 1px solid rgba(138, 180, 248, 0.3);
-    font-family: 'Poppins', sans-serif;
+    font-family: "Poppins", sans-serif;
     animation: pulse 2s ease-in-out infinite;
 }
 
 @keyframes pulse {
-    0%, 100% {
+    0%,
+    100% {
         transform: scale(1);
         opacity: 1;
     }
@@ -348,7 +429,7 @@ body, html, #root {
 
 /* Search Bar Positioning (FIXED) */
 .searchbar-container {
-    position: absolute; 
+    position: absolute;
     bottom: 40px; /* Moved up slightly */
     left: 50%;
     transform: translateX(-50%);
@@ -361,22 +442,22 @@ body, html, #root {
 /* Responsive adjustments */
 @media (max-width: 768px) {
     .main-content-overlay {
-        left: 0; 
+        left: 0;
         padding: 0 10px;
     }
-    
+
     .main-content-overlay.result-mode .content-scroll-area {
         padding-top: 20px;
     }
-    
+
     .greeting-hello {
         font-size: 2rem;
     }
-     
+
     .greeting-question {
         font-size: 2.5rem;
     }
-    
+
     /* Ensure search bar stays visible */
     .searchbar-container {
         max-width: 95%;

@@ -1,5 +1,5 @@
 :root {
-    --color-primary: #8ab4f8; 
+    --color-primary: #8ab4f8;
     --color-primary-light: #a8c7fa;
     --color-text-light: #e8eaed;
     --color-text-muted: #b0b3b8;
@@ -9,11 +9,11 @@
     --color-shadow-medium: rgba(138, 180, 248, 0.15);
     --color-shadow-glow: rgba(138, 180, 248, 0.6);
     --color-error: #f44336;
-    
+
     /* UPDATED: Sidebar width increased to 350px */
-    --sidebar-open-width: 350px; 
+    --sidebar-open-width: 350px;
     --sidebar-closed-width: 60px;
-    
+
     /* Transitions */
     --transition-fast: 0.2s ease;
     --transition-medium: 0.3s ease;
@@ -27,7 +27,11 @@
     top: 0;
     left: 0;
     /* Enhanced gradient background with glassmorphism */
-    background: linear-gradient(180deg, rgba(15, 15, 35, 0.98) 0%, rgba(10, 10, 25, 0.95) 100%);
+    background: linear-gradient(
+        180deg,
+        rgba(15, 15, 35, 0.98) 0%,
+        rgba(10, 10, 25, 0.95) 100%
+    );
     backdrop-filter: blur(20px) saturate(150%);
     color: var(--color-text-light);
     padding: 20px 15px;
@@ -35,11 +39,13 @@
     flex-direction: column;
     z-index: 20;
     /* Enhanced shadow with glow effect */
-    box-shadow: 
-        4px 0 30px rgba(0, 0, 0, 0.8), 
+    box-shadow:
+        4px 0 30px rgba(0, 0, 0, 0.8),
         2px 0 10px rgba(138, 180, 248, 0.15),
         inset -1px 0 0 0 rgba(138, 180, 248, 0.1);
-    transition: width var(--transition-medium), padding var(--transition-medium); 
+    transition:
+        width var(--transition-medium),
+        padding var(--transition-medium);
     overflow-y: hidden;
 }
 
@@ -47,7 +53,7 @@
 .sidebar.collapsed {
     width: var(--sidebar-closed-width);
     padding: 20px 10px;
-    align-items: center; 
+    align-items: center;
 }
 
 /* Sidebar Top Section */
@@ -84,7 +90,11 @@
 
 /* New Chat Button (Enhanced with gradient/glow and animation) */
 .new-chat-button {
-    background: linear-gradient(135deg, rgba(138, 180, 248, 0.25), rgba(138, 180, 248, 0.15));
+    background: linear-gradient(
+        135deg,
+        rgba(138, 180, 248, 0.25),
+        rgba(138, 180, 248, 0.15)
+    );
     color: var(--color-primary);
     padding: 14px 18px;
     border-radius: 14px;
@@ -95,15 +105,23 @@
     font-weight: 600;
     transition: all var(--transition-medium);
     width: 100%;
-    box-shadow: 0 4px 15px rgba(138, 180, 248, 0.25), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    box-shadow:
+        0 4px 15px rgba(138, 180, 248, 0.25),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
     border: 1px solid rgba(138, 180, 248, 0.2);
-    font-family: 'Poppins', sans-serif;
+    font-family: "Poppins", sans-serif;
     letter-spacing: 0.5px;
 }
 
 .new-chat-button:hover {
-    background: linear-gradient(135deg, rgba(138, 180, 248, 0.35), rgba(138, 180, 248, 0.25));
-    box-shadow: 0 6px 25px var(--color-shadow-light), inset 0 1px 0 rgba(255, 255, 255, 0.15);
+    background: linear-gradient(
+        135deg,
+        rgba(138, 180, 248, 0.35),
+        rgba(138, 180, 248, 0.25)
+    );
+    box-shadow:
+        0 6px 25px var(--color-shadow-light),
+        inset 0 1px 0 rgba(255, 255, 255, 0.15);
     transform: translateY(-2px) scale(1.01);
     border-color: rgba(138, 180, 248, 0.4);
 }
@@ -141,7 +159,11 @@
 .sidebar-search {
     display: flex;
     align-items: center;
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.04));
+    background: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.08),
+        rgba(255, 255, 255, 0.04)
+    );
     backdrop-filter: blur(10px);
     border-radius: 12px;
     padding: 10px 14px;
@@ -151,7 +173,11 @@
 }
 
 .sidebar-search:focus-within {
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.06));
+    background: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.12),
+        rgba(255, 255, 255, 0.06)
+    );
     border-color: rgba(138, 180, 248, 0.3);
     box-shadow: 0 0 15px rgba(138, 180, 248, 0.2);
 }
@@ -177,9 +203,9 @@
 
 /* Sidebar Middle/Recent Section */
 .recent-chats-section {
-    flex-grow: 1; 
-    overflow-y: auto; 
-    padding-right: 5px; 
+    flex-grow: 1;
+    overflow-y: auto;
+    padding-right: 5px;
 }
 
 .sidebar-section h3 {
@@ -191,12 +217,12 @@
     text-transform: uppercase;
     letter-spacing: 1.5px;
     font-weight: 600;
-    font-family: 'Poppins', sans-serif;
+    font-family: "Poppins", sans-serif;
     position: relative;
 }
 
 .sidebar-section h3::after {
-    content: '';
+    content: "";
     position: absolute;
     left: 0;
     bottom: -5px;
@@ -207,7 +233,7 @@
 }
 
 .sidebar-item {
-    position: relative; 
+    position: relative;
     display: flex;
     align-items: center;
     padding: 12px 14px;
@@ -224,7 +250,11 @@
 }
 
 .sidebar-item:hover:not(.selected-chat) {
-    background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+    background: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.1),
+        rgba(255, 255, 255, 0.05)
+    );
     transform: translateX(4px);
     border-color: rgba(138, 180, 248, 0.15);
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
@@ -250,11 +280,15 @@
 
 /* Selected State (The star of the show) */
 .selected-chat {
-    background: linear-gradient(135deg, rgba(138, 180, 248, 0.2), rgba(138, 180, 248, 0.12));
+    background: linear-gradient(
+        135deg,
+        rgba(138, 180, 248, 0.2),
+        rgba(138, 180, 248, 0.12)
+    );
     color: var(--color-primary-light);
     font-weight: 600;
     /* Enhanced glow for selected item */
-    box-shadow: 
+    box-shadow:
         0 0 20px rgba(138, 180, 248, 0.3) inset,
         0 4px 15px rgba(0, 0, 0, 0.4),
         0 0 10px rgba(138, 180, 248, 0.2);
@@ -263,14 +297,18 @@
 }
 
 .selected-chat::before {
-    content: '';
+    content: "";
     position: absolute;
     left: 0;
     top: 50%;
     transform: translateY(-50%);
     width: 4px;
     height: 60%;
-    background: linear-gradient(180deg, var(--color-primary), var(--color-primary-light));
+    background: linear-gradient(
+        180deg,
+        var(--color-primary),
+        var(--color-primary-light)
+    );
     border-radius: 0 4px 4px 0;
     box-shadow: 0 0 10px var(--color-primary);
 }
@@ -285,13 +323,13 @@
     gap: 5px;
     background-color: rgba(15, 15, 30, 0.9);
     padding-left: 10px;
-    opacity: 0; 
+    opacity: 0;
     transition: opacity 0.2s;
 }
 
 .sidebar-item:hover .chat-actions,
 .selected-chat .chat-actions {
-    opacity: 1; 
+    opacity: 1;
 }
 
 .action-icon {
@@ -335,13 +373,18 @@
 }
 
 .sidebar-bottom::before {
-    content: '';
+    content: "";
     position: absolute;
     top: 0;
     left: 0;
     right: 0;
     height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(138, 180, 248, 0.3), transparent);
+    background: linear-gradient(
+        90deg,
+        transparent,
+        rgba(138, 180, 248, 0.3),
+        transparent
+    );
 }
 
 .sidebar-bottom .sidebar-item {
